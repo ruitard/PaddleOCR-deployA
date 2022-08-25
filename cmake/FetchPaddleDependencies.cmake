@@ -1,21 +1,9 @@
-include(FetchContent)
-
-FetchContent_Declare(
-    autolog
-    GIT_REPOSITORY https://github.com/LDOUBLEV/AutoLog.git
-    GIT_TAG        main
-    GIT_SHALLOW    ON
-)
-FetchContent_MakeAvailable(autolog)
-add_library(autolog INTERFACE)
-target_include_directories(autolog INTERFACE ${autolog_SOURCE_DIR})
-add_library(autolog::header ALIAS autolog)
-
 # https://www.paddlepaddle.org.cn/inference/v2.3/user_guides/download_lib.html
 
 add_library(paddle2onnx SHARED IMPORTED GLOBAL)
 set_target_properties(paddle2onnx PROPERTIES
-    IMPORTED_LOCATION ${PADDLE_DIRECTORY}/third_party/install/paddle2onnx/lib/libpaddle2onnx.so.1.0.0rc2
+    IMPORTED_LOCATION ${PADDLE_DIRECTORY}/third_party/install/paddle2onnx/lib/libpaddle2onnx.so
+    IMPORTED_SONAME "libpaddle2onnx.so.1.0.0rc2"
 )
 install(IMPORTED_RUNTIME_ARTIFACTS paddle2onnx)
 
@@ -41,7 +29,8 @@ install(IMPORTED_RUNTIME_ARTIFACTS mkl_dnn)
 
 add_library(onnx_runtime SHARED IMPORTED GLOBAL)
 set_target_properties(onnx_runtime PROPERTIES
-    IMPORTED_LOCATION ${PADDLE_DIRECTORY}/third_party/install/onnxruntime/lib/libonnxruntime.so.1.11.1
+    IMPORTED_LOCATION ${PADDLE_DIRECTORY}/third_party/install/onnxruntime/lib/libonnxruntime.so
+    IMPORTED_SONAME "libonnxruntime.so.1.11.1"
 )
 install(IMPORTED_RUNTIME_ARTIFACTS onnx_runtime)
 

@@ -15,7 +15,6 @@
 #include <include/args.h>
 #include <include/paddlestructure.h>
 
-#include "auto_log/autolog.h"
 #include <numeric>
 #include <sys/stat.h>
 

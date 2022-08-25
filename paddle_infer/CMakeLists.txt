@@ -1,7 +1,6 @@
 find_package(OpenCV CONFIG REQUIRED)
-find_package(nlohmann_json CONFIG REQUIRED)
 find_package(gflags CONFIG REQUIRED)
-find_package(glog CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 file(GLOB PPOCR_SOURCES "src/*.cpp")
 
@@ -12,10 +11,8 @@ target_link_libraries(${PROJECT_NAME}
 PRIVATE
     paddle::inference
     opencv_imgcodecs
-    nlohmann_json::nlohmann_json
     gflags::gflags
-    autolog::header
-    glog::glog
+    spdlog::spdlog
 )
 
 set_target_properties(${PROJECT_NAME} PROPERTIES

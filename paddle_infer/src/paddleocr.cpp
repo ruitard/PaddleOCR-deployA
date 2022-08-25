@@ -15,7 +15,7 @@
 #include <include/args.h>
 #include <include/paddleocr.h>
 
-#include "auto_log/autolog.h"
+
 #include <numeric>
 namespace PaddleOCR {
 
@@ -191,24 +191,24 @@ PPOCR::ocr(std::vector<cv::String> cv_all_img_names, bool det, bool rec,
 void PPOCR::log(std::vector<double> &det_times, std::vector<double> &rec_times,
                 std::vector<double> &cls_times, int img_num) {
   if (det_times[0] + det_times[1] + det_times[2] > 0) {
-    AutoLogger autolog_det("ocr_det", FLAGS_use_gpu, FLAGS_use_tensorrt,
-                           FLAGS_enable_mkldnn, FLAGS_cpu_threads, 1, "dynamic",
-                           FLAGS_precision, det_times, img_num);
-    autolog_det.report();
+    // AutoLogger autolog_det("ocr_det", FLAGS_use_gpu, FLAGS_use_tensorrt,
+    //                        FLAGS_enable_mkldnn, FLAGS_cpu_threads, 1, "dynamic",
+    //                        FLAGS_precision, det_times, img_num);
+    // autolog_det.report();
   }
   if (rec_times[0] + rec_times[1] + rec_times[2] > 0) {
-    AutoLogger autolog_rec("ocr_rec", FLAGS_use_gpu, FLAGS_use_tensorrt,
-                           FLAGS_enable_mkldnn, FLAGS_cpu_threads,
-                           FLAGS_rec_batch_num, "dynamic", FLAGS_precision,
-                           rec_times, img_num);
-    autolog_rec.report();
+    // AutoLogger autolog_rec("ocr_rec", FLAGS_use_gpu, FLAGS_use_tensorrt,
+    //                        FLAGS_enable_mkldnn, FLAGS_cpu_threads,
+    //                        FLAGS_rec_batch_num, "dynamic", FLAGS_precision,
+    //                        rec_times, img_num);
+    // autolog_rec.report();
   }
   if (cls_times[0] + cls_times[1] + cls_times[2] > 0) {
-    AutoLogger autolog_cls("ocr_cls", FLAGS_use_gpu, FLAGS_use_tensorrt,
-                           FLAGS_enable_mkldnn, FLAGS_cpu_threads,
-                           FLAGS_cls_batch_num, "dynamic", FLAGS_precision,
-                           cls_times, img_num);
-    autolog_cls.report();
+    // AutoLogger autolog_cls("ocr_cls", FLAGS_use_gpu, FLAGS_use_tensorrt,
+    //                        FLAGS_enable_mkldnn, FLAGS_cpu_threads,
+    //                        FLAGS_cls_batch_num, "dynamic", FLAGS_precision,
+    //                        cls_times, img_num);
+    // autolog_cls.report();
   }
 }
 PPOCR::~PPOCR() {
