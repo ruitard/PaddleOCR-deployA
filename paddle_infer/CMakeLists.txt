@@ -2,12 +2,15 @@ find_package(OpenCV CONFIG REQUIRED)
 find_package(gflags CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 
-file(GLOB PPOCR_SOURCES "src/*.cpp")
+add_executable(ppocra ${PPOCR_SOURCES})
+add_subdirectory(src)
 
-add_executable(${PROJECT_NAME} ${PPOCR_SOURCES})
-target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+if(MSVC)
+target_compile_definitions(ppocra PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
+target_compile_options(ppocra PRIVATE /utf-8)
+endif()
 
-target_link_libraries(${PROJECT_NAME}
+target_link_libraries(ppocra
 PRIVATE
     paddle::inference
     opencv_imgcodecs
@@ -15,7 +18,7 @@ PRIVATE
     spdlog::spdlog
 )
 
-set_target_properties(${PROJECT_NAME} PROPERTIES
+set_target_properties(ppocra PROPERTIES
     INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib"
 )
-install(TARGETS ${PROJECT_NAME})
+install(TARGETS ppocra)
