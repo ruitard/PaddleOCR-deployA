@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.24)
-project(ppocra VERSION 0.0.1)
+project(ppocra VERSION 1.0.0 HOMEPAGE_URL "https://github.com/ruitard/PaddleOCR-deployA")
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)

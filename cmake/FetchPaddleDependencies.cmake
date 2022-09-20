@@ -42,3 +42,5 @@ set_target_properties(paddle_inference PROPERTIES
 target_include_directories(paddle_inference INTERFACE ${PADDLE_DIRECTORY}/paddle/include)
 install(IMPORTED_RUNTIME_ARTIFACTS paddle_inference)
 add_library(paddle::inference ALIAS paddle_inference)
+
+# https://github.com/PaddlePaddle/PaddleOCR/blob/release/2.6/doc/doc_ch/models_list.md
