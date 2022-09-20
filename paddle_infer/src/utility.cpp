@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include <dirent.h>
-#include <include/utility.h>
+#include "utility.h"
 #include <iostream>
 #include <ostream>
 

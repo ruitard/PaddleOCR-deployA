@@ -14,9 +14,9 @@
 
 #pragma once
 
-#include <include/ocr_cls.h>
-#include <include/ocr_det.h>
-#include <include/ocr_rec.h>
+#include "ocr_cls.h"
+#include "ocr_det.h"
+#include "ocr_rec.h"
 
 namespace PaddleOCR {
 

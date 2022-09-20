@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <include/preprocess_op.h>
+#include "preprocess_op.h"
 
 namespace PaddleOCR {
 

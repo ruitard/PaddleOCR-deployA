@@ -17,8 +17,8 @@
 #include <iostream>
 #include <vector>
 
-#include <include/args.h>
-#include <include/paddleocr.h>
+#include "args.h"
+#include "paddleocr.h"
 
 using namespace PaddleOCR;
 

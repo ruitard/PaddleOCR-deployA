@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <include/args.h>
-#include <include/paddleocr.h>
+#include "args.h"
+#include "paddleocr.h"
 
 namespace PaddleOCR {
 

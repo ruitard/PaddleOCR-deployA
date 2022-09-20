@@ -46,7 +46,7 @@
 #include <stdexcept>
 #include <vector>
 
-#include "include/clipper.h"
+#include "clipper.h"
 
 namespace ClipperLib {
 

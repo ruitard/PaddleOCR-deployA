@@ -14,8 +14,8 @@
 
 #pragma once
 
-#include "include/clipper.h"
-#include "include/utility.h"
+#include "clipper.h"
+#include "utility.h"
 
 namespace PaddleOCR {
 
