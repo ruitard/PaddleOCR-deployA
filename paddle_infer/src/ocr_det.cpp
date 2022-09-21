@@ -17,30 +17,23 @@
 namespace PaddleOCR {
 
 void DBDetector::LoadModel(const std::string &model_dir) {
-  //   AnalysisConfig config;
-  paddle_infer::Config config;
-  config.SetModel(model_dir + "/inference.pdmodel",
-                  model_dir + "/inference.pdiparams");
+    paddle_infer::Config config;
+    config.SetModel(model_dir + "/inference.pdmodel", model_dir + "/inference.pdiparams");
 
-  config.DisableGpu();
-  if (this->use_mkldnn_) {
-      config.EnableMKLDNN();
-      // cache 10 different shapes for mkldnn to avoid memory leak
-      config.SetMkldnnCacheCapacity(10);
-  }
-  config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
+    config.DisableGpu();
+    config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
 
-  // use zero_copy_run as default
-  config.SwitchUseFeedFetchOps(false);
-  // true for multiple input
-  config.SwitchSpecifyInputNames(true);
+    // use zero_copy_run as default
+    config.SwitchUseFeedFetchOps(false);
+    // true for multiple input
+    config.SwitchSpecifyInputNames(true);
 
-  config.SwitchIrOptim(true);
+    config.SwitchIrOptim(true);
 
-  config.EnableMemoryOptim();
-  config.DisableGlogInfo();
+    config.EnableMemoryOptim();
+    config.DisableGlogInfo();
 
-  this->predictor_ = paddle_infer::CreatePredictor(config);
+    this->predictor_ = paddle_infer::CreatePredictor(config);
 }
 
 void DBDetector::Run(cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes) {
@@ -51,9 +44,8 @@ void DBDetector::Run(cv::Mat &img, std::vector<std::vector<std::vector<int>>> &b
   cv::Mat resize_img;
   img.copyTo(srcimg);
 
-  this->resize_op_.Run(img, resize_img, this->limit_type_,
-                       this->limit_side_len_, ratio_h, ratio_w,
-                       this->use_tensorrt_);
+  this->resize_op_.Run(img, resize_img, this->limit_type, this->limit_side_len_, ratio_h, ratio_w,
+                       this->use_tensorrt);
 
   this->normalize_op_.Run(&resize_img, this->mean_, this->scale_,
                           this->is_scale_);

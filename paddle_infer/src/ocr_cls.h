@@ -24,25 +24,15 @@ namespace PaddleOCR {
 
 class Classifier {
 public:
-  explicit Classifier(const std::string &model_dir, const bool &use_gpu,
-                      const int &gpu_id, const int &gpu_mem,
-                      const int &cpu_math_library_num_threads,
-                      const bool &use_mkldnn, const double &cls_thresh,
-                      const bool &use_tensorrt, const std::string &precision,
-                      const int &cls_batch_num) {
-    this->use_gpu_ = use_gpu;
-    this->gpu_id_ = gpu_id;
-    this->gpu_mem_ = gpu_mem;
-    this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
-    this->use_mkldnn_ = use_mkldnn;
+    Classifier(const std::string &model_dir, unsigned int cpu_math_library_num_threads,
+               double cls_thresh, int cls_batch_num) {
+        this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
 
-    this->cls_thresh = cls_thresh;
-    this->use_tensorrt_ = use_tensorrt;
-    this->precision_ = precision;
-    this->cls_batch_num_ = cls_batch_num;
+        this->cls_thresh = cls_thresh;
+        this->cls_batch_num_ = cls_batch_num;
 
-    LoadModel(model_dir);
-  }
+        LoadModel(model_dir);
+    }
   double cls_thresh = 0.9;
 
   // Load Paddle inference model
@@ -53,17 +43,12 @@ public:
   private:
   std::shared_ptr<paddle_infer::Predictor> predictor_;
 
-  bool use_gpu_ = false;
-  int gpu_id_ = 0;
-  int gpu_mem_ = 4000;
-  int cpu_math_library_num_threads_ = 4;
-  bool use_mkldnn_ = false;
+  unsigned int cpu_math_library_num_threads_ = 4;
 
   std::vector<float> mean_ = {0.5f, 0.5f, 0.5f};
   std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
   bool is_scale_ = true;
-  bool use_tensorrt_ = false;
-  std::string precision_ = "fp32";
+  bool use_tensorrt = false;
   int cls_batch_num_ = 1;
   // pre-process
   ClsResizeImg resize_op_;

@@ -45,7 +45,8 @@ void CRNNRecognizer::Run(std::vector<cv::Mat> img_list, std::vector<std::string>
             cv::Mat srcimg;
             img_list[indices[ino]].copyTo(srcimg);
             cv::Mat resize_img;
-            this->resize_op_.Run(srcimg, resize_img, max_wh_ratio, this->use_tensorrt_, this->rec_image_shape_);
+            this->resize_op_.Run(srcimg, resize_img, max_wh_ratio, this->use_tensorrt,
+                                 this->rec_image_shape_);
             this->normalize_op_.Run(&resize_img, this->mean_, this->scale_, this->is_scale_);
             norm_img_batch.push_back(resize_img);
             batch_width = std::max(resize_img.cols, batch_width);
@@ -109,11 +110,6 @@ void CRNNRecognizer::LoadModel(const std::string &model_dir) {
   paddle_infer::Config config;
   config.SetModel(model_dir + "/inference.pdmodel", model_dir + "/inference.pdiparams");
   config.DisableGpu();
-  if (this->use_mkldnn_) {
-    config.EnableMKLDNN();
-    // cache 10 different shapes for mkldnn to avoid memory leak
-    config.SetMkldnnCacheCapacity(10);
-  }
   config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
 
   // get pass_builder object

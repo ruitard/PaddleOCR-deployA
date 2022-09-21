@@ -42,9 +42,8 @@ public:
 
 class ResizeImgType0 {
 public:
-  virtual void Run(const cv::Mat &img, cv::Mat &resize_img,
-                   std::string limit_type, int limit_side_len, float &ratio_h,
-                   float &ratio_w, bool use_tensorrt);
+    virtual void Run(const cv::Mat &img, cv::Mat &resize_img, const std::string_view &limit_type,
+                     int limit_side_len, float &ratio_h, float &ratio_w, bool use_tensorrt);
 };
 
 class CrnnResizeImg {

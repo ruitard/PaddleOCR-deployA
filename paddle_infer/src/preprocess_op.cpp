@@ -54,8 +54,8 @@ void Normalize::Run(cv::Mat *im, const std::vector<float> &mean,
 }
 
 void ResizeImgType0::Run(const cv::Mat &img, cv::Mat &resize_img,
-                         std::string limit_type, int limit_side_len,
-                         float &ratio_h, float &ratio_w, bool use_tensorrt) {
+                         const std::string_view &limit_type, int limit_side_len, float &ratio_h,
+                         float &ratio_w, bool use_tensorrt) {
   int w = img.cols;
   int h = img.rows;
   float ratio = 1.f;

@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <string_view>
+#include <thread>
 #include "args.h"
 #include "paddleocr.h"
 
@@ -26,28 +28,18 @@ std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) {
 }
 
 PPOCR::PPOCR() {
-  if (FLAGS_det) {
-    this->detector_ = new DBDetector(
-        FLAGS_det_model_dir, FLAGS_use_gpu, FLAGS_gpu_id, FLAGS_gpu_mem,
-        FLAGS_cpu_threads, FLAGS_enable_mkldnn, FLAGS_limit_type,
-        FLAGS_limit_side_len, FLAGS_det_db_thresh, FLAGS_det_db_box_thresh,
-        FLAGS_det_db_unclip_ratio, FLAGS_det_db_score_mode, FLAGS_use_dilation,
-        FLAGS_use_tensorrt, FLAGS_precision);
-  }
+    auto cpu_threads = std::thread::hardware_concurrency();
+    this->detector_ =
+        new DBDetector(FLAGS_det_model_dir, cpu_threads, FLAGS_limit_side_len, FLAGS_det_db_thresh,
+                       FLAGS_det_db_box_thresh, FLAGS_det_db_unclip_ratio, FLAGS_det_db_score_mode,
+                       FLAGS_use_dilation);
 
-  if (FLAGS_cls && FLAGS_use_angle_cls) {
-    this->classifier_ = new Classifier(
-        FLAGS_cls_model_dir, FLAGS_use_gpu, FLAGS_gpu_id, FLAGS_gpu_mem,
-        FLAGS_cpu_threads, FLAGS_enable_mkldnn, FLAGS_cls_thresh,
-        FLAGS_use_tensorrt, FLAGS_precision, FLAGS_cls_batch_num);
-  }
-  if (FLAGS_rec) {
-    this->recognizer_ = new CRNNRecognizer(
-        FLAGS_rec_model_dir, FLAGS_use_gpu, FLAGS_gpu_id, FLAGS_gpu_mem,
-        FLAGS_cpu_threads, FLAGS_enable_mkldnn, FLAGS_rec_char_dict_path,
-        FLAGS_use_tensorrt, FLAGS_precision, FLAGS_rec_batch_num,
-        FLAGS_rec_img_h, FLAGS_rec_img_w);
-  }
+    this->classifier_ =
+        new Classifier(FLAGS_cls_model_dir, cpu_threads, FLAGS_cls_thresh, FLAGS_cls_batch_num);
+
+    this->recognizer_ =
+        new CRNNRecognizer(FLAGS_rec_model_dir, cpu_threads, FLAGS_rec_char_dict_path,
+                           FLAGS_rec_batch_num, FLAGS_rec_img_h, FLAGS_rec_img_w);
 };
 
 std::vector<OCRPredictResult> PPOCR::ocr(cv::Mat img, bool det, bool rec,

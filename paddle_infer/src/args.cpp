@@ -38,7 +38,7 @@ DEFINE_string(det_db_score_mode, "slow", "Whether use polygon score.");
 DEFINE_bool(visualize, true, "Whether show the detection results.");
 // classification related
 DEFINE_bool(use_angle_cls, false, "Whether use use_angle_cls.");
-DEFINE_string(cls_model_dir, "", "Path of cls inference model.");
+DEFINE_string(cls_model_dir, "ch_ppocr_mobile_v2.0_cls_slim_infer", "Path of cls inference model.");
 DEFINE_double(cls_thresh, 0.9, "Threshold of cls_thresh.");
 DEFINE_int32(cls_batch_num, 1, "cls_batch_num.");
 // recognition related

@@ -29,7 +29,7 @@ void Classifier::Run(std::vector<cv::Mat> img_list, std::vector<int> &cls_labels
             cv::Mat srcimg;
             img_list[ino].copyTo(srcimg);
             cv::Mat resize_img;
-            this->resize_op_.Run(srcimg, resize_img, this->use_tensorrt_, cls_image_shape);
+            this->resize_op_.Run(srcimg, resize_img, this->use_tensorrt, cls_image_shape);
 
             this->normalize_op_.Run(&resize_img, this->mean_, this->scale_, this->is_scale_);
             norm_img_batch.push_back(resize_img);
@@ -72,9 +72,6 @@ void Classifier::LoadModel(const std::string &model_dir) {
                   model_dir + "/inference.pdiparams");
 
   config.DisableGpu();
-  if (this->use_mkldnn_) {
-    config.EnableMKLDNN();
-  }
   config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
 
   // false for zero copy tensor
