@@ -27,13 +27,7 @@ public:
 
   std::vector<OCRPredictResult> ocr(cv::Mat img, bool det = true, bool rec = true, bool cls = false);
 
-  void reset_timer();
-
-protected:
-  std::vector<double> time_info_det = {0, 0, 0};
-  std::vector<double> time_info_rec = {0, 0, 0};
-  std::vector<double> time_info_cls = {0, 0, 0};
-
+  protected:
   void det(cv::Mat img, std::vector<OCRPredictResult> &ocr_results);
   void rec(std::vector<cv::Mat> img_list,
            std::vector<OCRPredictResult> &ocr_results);

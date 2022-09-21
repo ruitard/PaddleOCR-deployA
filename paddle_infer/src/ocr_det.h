@@ -59,10 +59,9 @@ public:
   void LoadModel(const std::string &model_dir);
 
   // Run predictor
-  void Run(cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes,
-           std::vector<double> &times);
+  void Run(cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes);
 
-private:
+  private:
   std::shared_ptr<paddle_infer::Predictor> predictor_;
 
   bool use_gpu_ = false;

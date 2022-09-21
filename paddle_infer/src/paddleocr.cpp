@@ -82,9 +82,8 @@ std::vector<OCRPredictResult> PPOCR::ocr(cv::Mat img, bool det, bool rec,
 
 void PPOCR::det(cv::Mat img, std::vector<OCRPredictResult> &ocr_results) {
   std::vector<std::vector<std::vector<int>>> boxes;
-  std::vector<double> det_times;
 
-  this->detector_->Run(img, boxes, det_times);
+  this->detector_->Run(img, boxes);
 
   for (int i = 0; i < boxes.size(); i++) {
     OCRPredictResult res;
@@ -93,47 +92,30 @@ void PPOCR::det(cv::Mat img, std::vector<OCRPredictResult> &ocr_results) {
   }
   // sort boex from top to bottom, from left to right
   Utility::sorted_boxes(ocr_results);
-  this->time_info_det[0] += det_times[0];
-  this->time_info_det[1] += det_times[1];
-  this->time_info_det[2] += det_times[2];
 }
 
 void PPOCR::rec(std::vector<cv::Mat> img_list,
                 std::vector<OCRPredictResult> &ocr_results) {
   std::vector<std::string> rec_texts(img_list.size(), "");
   std::vector<float> rec_text_scores(img_list.size(), 0);
-  std::vector<double> rec_times;
-  this->recognizer_->Run(img_list, rec_texts, rec_text_scores, rec_times);
+  this->recognizer_->Run(img_list, rec_texts, rec_text_scores);
   // output rec results
   for (int i = 0; i < rec_texts.size(); i++) {
     ocr_results[i].text = rec_texts[i];
     ocr_results[i].score = rec_text_scores[i];
   }
-  this->time_info_rec[0] += rec_times[0];
-  this->time_info_rec[1] += rec_times[1];
-  this->time_info_rec[2] += rec_times[2];
 }
 
 void PPOCR::cls(std::vector<cv::Mat> img_list,
                 std::vector<OCRPredictResult> &ocr_results) {
   std::vector<int> cls_labels(img_list.size(), 0);
   std::vector<float> cls_scores(img_list.size(), 0);
-  std::vector<double> cls_times;
-  this->classifier_->Run(img_list, cls_labels, cls_scores, cls_times);
+  this->classifier_->Run(img_list, cls_labels, cls_scores);
   // output cls results
   for (int i = 0; i < cls_labels.size(); i++) {
     ocr_results[i].cls_label = cls_labels[i];
     ocr_results[i].cls_score = cls_scores[i];
   }
-  this->time_info_cls[0] += cls_times[0];
-  this->time_info_cls[1] += cls_times[1];
-  this->time_info_cls[2] += cls_times[2];
-}
-
-void PPOCR::reset_timer() {
-  this->time_info_det = {0, 0, 0};
-  this->time_info_rec = {0, 0, 0};
-  this->time_info_cls = {0, 0, 0};
 }
 
 PPOCR::~PPOCR() {
