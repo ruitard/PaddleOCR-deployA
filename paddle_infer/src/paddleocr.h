@@ -33,7 +33,6 @@ public:
                                     bool rec = true, bool cls = true);
 
   void reset_timer();
-  void benchmark_log(int img_num);
 
 protected:
   std::vector<double> time_info_det = {0, 0, 0};

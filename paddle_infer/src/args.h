@@ -24,8 +24,6 @@ DECLARE_int32(gpu_mem);
 DECLARE_int32(cpu_threads);
 DECLARE_bool(enable_mkldnn);
 DECLARE_string(precision);
-DECLARE_bool(benchmark);
-DECLARE_string(output);
 DECLARE_string(image_dir);
 DECLARE_string(type);
 // detection related
@@ -49,13 +47,8 @@ DECLARE_int32(rec_batch_num);
 DECLARE_string(rec_char_dict_path);
 DECLARE_int32(rec_img_h);
 DECLARE_int32(rec_img_w);
-// structure model related
-DECLARE_string(table_model_dir);
-DECLARE_int32(table_max_len);
-DECLARE_int32(table_batch_num);
-DECLARE_string(table_char_dict_path);
+
 // forward related
 DECLARE_bool(det);
 DECLARE_bool(rec);
 DECLARE_bool(cls);
-DECLARE_bool(table);

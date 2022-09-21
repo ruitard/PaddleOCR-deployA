@@ -162,10 +162,6 @@ void PPOCR::reset_timer() {
   this->time_info_cls = {0, 0, 0};
 }
 
-void PPOCR::benchmark_log(int) {
-
-}
-
 PPOCR::~PPOCR() {
   if (this->detector_ != nullptr) {
     delete this->detector_;
