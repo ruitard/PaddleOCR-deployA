@@ -18,6 +18,7 @@ find_package(Threads REQUIRED)
 include(cmake/FetchPaddleDependencies.cmake)
 
 add_subdirectory(paddle_infer)
+add_subdirectory(cli)
 
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})

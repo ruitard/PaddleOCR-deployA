@@ -1,8 +1,8 @@
-target_sources(ppocra
+target_sources(paddleocr
 PRIVATE
-    clipper.cpp
+    args.cpp clipper.cpp
     ocr_cls.cpp ocr_det.cpp ocr_rec.cpp
     paddleocr.cpp
     postprocess_op.cpp preprocess_op.cpp utility.cpp
 )
-target_include_directories(ppocra PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(paddleocr PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

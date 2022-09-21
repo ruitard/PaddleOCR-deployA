@@ -22,32 +22,14 @@ void DBDetector::LoadModel(const std::string &model_dir) {
   config.SetModel(model_dir + "/inference.pdmodel",
                   model_dir + "/inference.pdiparams");
 
-  if (this->use_gpu_) {
-    config.EnableUseGpu(this->gpu_mem_, this->gpu_id_);
-    if (this->use_tensorrt_) {
-      auto precision = paddle_infer::Config::Precision::kFloat32;
-      if (this->precision_ == "fp16") {
-        precision = paddle_infer::Config::Precision::kHalf;
-      }
-      if (this->precision_ == "int8") {
-        precision = paddle_infer::Config::Precision::kInt8;
-      }
-      config.EnableTensorRtEngine(1 << 30, 1, 20, precision, false, false);
-      if (!Utility::PathExists("./trt_det_shape.txt")) {
-        config.CollectShapeRangeInfo("./trt_det_shape.txt");
-      } else {
-        config.EnableTunedTensorRtDynamicShape("./trt_det_shape.txt", true);
-      }
-    }
-  } else {
-    config.DisableGpu();
-    if (this->use_mkldnn_) {
+  config.DisableGpu();
+  if (this->use_mkldnn_) {
       config.EnableMKLDNN();
       // cache 10 different shapes for mkldnn to avoid memory leak
       config.SetMkldnnCacheCapacity(10);
-    }
-    config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
   }
+  config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
+
   // use zero_copy_run as default
   config.SwitchUseFeedFetchOps(false);
   // true for multiple input

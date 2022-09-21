@@ -17,6 +17,14 @@
 
 namespace PaddleOCR {
 
+PaddleOCR::PaddleOCR() {}
+
+std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) {
+    cv::Mat img = cv::imread(image_path, cv::IMREAD_COLOR);
+    auto ppocr = std::make_unique<PPOCR>();
+    return ppocr->ocr(img);
+}
+
 PPOCR::PPOCR() {
   if (FLAGS_det) {
     this->detector_ = new DBDetector(
@@ -41,40 +49,6 @@ PPOCR::PPOCR() {
         FLAGS_rec_img_h, FLAGS_rec_img_w);
   }
 };
-
-std::vector<std::vector<OCRPredictResult>>
-PPOCR::ocr(std::vector<cv::Mat> img_list, bool det, bool rec, bool cls) {
-  std::vector<std::vector<OCRPredictResult>> ocr_results;
-
-  if (!det) {
-    std::vector<OCRPredictResult> ocr_result;
-    ocr_result.resize(img_list.size());
-    if (cls && this->classifier_ != nullptr) {
-      this->cls(img_list, ocr_result);
-      for (int i = 0; i < img_list.size(); i++) {
-        if (ocr_result[i].cls_label % 2 == 1 &&
-            ocr_result[i].cls_score > this->classifier_->cls_thresh) {
-          cv::rotate(img_list[i], img_list[i], 1);
-        }
-      }
-    }
-    if (rec) {
-      this->rec(img_list, ocr_result);
-    }
-    for (int i = 0; i < ocr_result.size(); ++i) {
-      std::vector<OCRPredictResult> ocr_result_tmp;
-      ocr_result_tmp.push_back(ocr_result[i]);
-      ocr_results.push_back(ocr_result_tmp);
-    }
-  } else {
-    for (int i = 0; i < img_list.size(); ++i) {
-      std::vector<OCRPredictResult> ocr_result =
-          this->ocr(img_list[i], true, rec, cls);
-      ocr_results.push_back(ocr_result);
-    }
-  }
-  return ocr_results;
-}
 
 std::vector<OCRPredictResult> PPOCR::ocr(cv::Mat img, bool det, bool rec,
                                          bool cls) {

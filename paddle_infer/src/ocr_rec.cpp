@@ -131,36 +131,14 @@ void CRNNRecognizer::Run(std::vector<cv::Mat> img_list,
 
 void CRNNRecognizer::LoadModel(const std::string &model_dir) {
   paddle_infer::Config config;
-  config.SetModel(model_dir + "/inference.pdmodel",
-                  model_dir + "/inference.pdiparams");
-  std::cout << "In PP-OCRv3, default rec_img_h is 48,"
-            << "if you use other model, you should set the param rec_img_h=32"
-            << std::endl;
-  if (this->use_gpu_) {
-    config.EnableUseGpu(this->gpu_mem_, this->gpu_id_);
-    if (this->use_tensorrt_) {
-      auto precision = paddle_infer::Config::Precision::kFloat32;
-      if (this->precision_ == "fp16") {
-        precision = paddle_infer::Config::Precision::kHalf;
-      }
-      if (this->precision_ == "int8") {
-        precision = paddle_infer::Config::Precision::kInt8;
-      }
-      if (!Utility::PathExists("./trt_rec_shape.txt")) {
-        config.CollectShapeRangeInfo("./trt_rec_shape.txt");
-      } else {
-        config.EnableTunedTensorRtDynamicShape("./trt_rec_shape.txt", true);
-      }
-    }
-  } else {
-    config.DisableGpu();
-    if (this->use_mkldnn_) {
-      config.EnableMKLDNN();
-      // cache 10 different shapes for mkldnn to avoid memory leak
-      config.SetMkldnnCacheCapacity(10);
-    }
-    config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
+  config.SetModel(model_dir + "/inference.pdmodel", model_dir + "/inference.pdiparams");
+  config.DisableGpu();
+  if (this->use_mkldnn_) {
+    config.EnableMKLDNN();
+    // cache 10 different shapes for mkldnn to avoid memory leak
+    config.SetMkldnnCacheCapacity(10);
   }
+  config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
 
   // get pass_builder object
   auto pass_builder = config.pass_builder();

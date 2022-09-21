@@ -25,12 +25,7 @@ public:
   explicit PPOCR();
   ~PPOCR();
 
-  std::vector<std::vector<OCRPredictResult>> ocr(std::vector<cv::Mat> img_list,
-                                                 bool det = true,
-                                                 bool rec = true,
-                                                 bool cls = true);
-  std::vector<OCRPredictResult> ocr(cv::Mat img, bool det = true,
-                                    bool rec = true, bool cls = true);
+  std::vector<OCRPredictResult> ocr(cv::Mat img, bool det = true, bool rec = true, bool cls = false);
 
   void reset_timer();
 

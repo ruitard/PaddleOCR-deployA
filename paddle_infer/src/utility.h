@@ -30,37 +30,13 @@
 #include "opencv2/imgcodecs.hpp"
 #include "opencv2/imgproc.hpp"
 
+#include "paddle_infer.hpp"
+
 namespace PaddleOCR {
-
-struct OCRPredictResult {
-  std::vector<std::vector<int>> box;
-  std::string text;
-  float score = -1.0;
-  float cls_score;
-  int cls_label = -1;
-};
-
-struct StructurePredictResult {
-  std::vector<float> box;
-  std::vector<std::vector<int>> cell_box;
-  std::string type;
-  std::vector<OCRPredictResult> text_res;
-  std::string html;
-  float html_score = -1;
-  float confidence;
-};
 
 class Utility {
 public:
   static std::vector<std::string> ReadDict(const std::string &path);
-
-  static void VisualizeBboxes(const cv::Mat &srcimg,
-                              const std::vector<OCRPredictResult> &ocr_result,
-                              const std::string &save_path);
-
-  static void VisualizeBboxes(const cv::Mat &srcimg,
-                              const StructurePredictResult &structure_result,
-                              const std::string &save_path);
 
   template <class ForwardIterator>
   inline static size_t argmax(ForwardIterator first, ForwardIterator last) {
@@ -74,14 +50,6 @@ public:
                                     std::vector<std::vector<int>> box);
 
   static std::vector<int> argsort(const std::vector<float> &array);
-
-  static std::string basename(const std::string &filename);
-
-  static bool PathExists(const std::string &path);
-
-  static void CreateDir(const std::string &path);
-
-  static void print_result(const std::vector<OCRPredictResult> &ocr_result);
 
   static cv::Mat crop_image(cv::Mat &img, const std::vector<int> &area);
   static cv::Mat crop_image(cv::Mat &img, const std::vector<float> &area);
