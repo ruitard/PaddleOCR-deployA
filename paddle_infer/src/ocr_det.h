@@ -24,20 +24,8 @@ namespace PaddleOCR {
 
 class DBDetector {
 public:
-    DBDetector(const std::string &model_dir, unsigned int cpu_math_library_num_threads,
-               int limit_side_len, double det_db_thresh, double det_db_box_thresh,
-               double det_db_unclip_ratio, const std::string &det_db_score_mode,
-               bool use_dilation) {
+    DBDetector(const std::string &model_dir, unsigned int cpu_math_library_num_threads) {
         this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
-
-        this->limit_side_len_ = limit_side_len;
-
-        this->det_db_thresh_ = det_db_thresh;
-        this->det_db_box_thresh_ = det_db_box_thresh;
-        this->det_db_unclip_ratio_ = det_db_unclip_ratio;
-        this->det_db_score_mode_ = det_db_score_mode;
-        this->use_dilation_ = use_dilation;
-
         LoadModel(model_dir);
     }
 
@@ -52,14 +40,14 @@ public:
 
   unsigned int cpu_math_library_num_threads_ = 4;
 
-  const std::string_view limit_type = "max";
-  int limit_side_len_ = 960;
+  std::string limit_type = "max";
+  int limit_side_len = 960;
 
-  double det_db_thresh_ = 0.3;
-  double det_db_box_thresh_ = 0.5;
-  double det_db_unclip_ratio_ = 2.0;
-  std::string det_db_score_mode_ = "slow";
-  bool use_dilation_ = false;
+  double det_db_thresh = 0.3;
+  double det_db_box_thresh = 0.6;
+  double det_db_unclip_ratio = 1.5;
+  std::string det_db_score_mode = "slow";
+  bool use_dilation = false;
 
   bool use_tensorrt = false;
 

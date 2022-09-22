@@ -39,9 +39,8 @@ public:
   float PolygonScoreAcc(std::vector<cv::Point> contour, cv::Mat pred);
 
   std::vector<std::vector<std::vector<int>>>
-  BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap,
-                  const float &box_thresh, const float &det_db_unclip_ratio,
-                  const std::string &det_db_score_mode);
+  BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap, const float &box_thresh,
+                  const float &det_db_unclip_ratio, const std::string_view &det_db_score_mode);
 
   std::vector<std::vector<std::vector<int>>>
   FilterTagDetRes(std::vector<std::vector<std::vector<int>>> boxes,

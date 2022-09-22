@@ -29,10 +29,7 @@ std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) {
 
 PPOCR::PPOCR() {
     auto cpu_threads = std::thread::hardware_concurrency();
-    this->detector_ =
-        new DBDetector(FLAGS_det_model_dir, cpu_threads, FLAGS_limit_side_len, FLAGS_det_db_thresh,
-                       FLAGS_det_db_box_thresh, FLAGS_det_db_unclip_ratio, FLAGS_det_db_score_mode,
-                       FLAGS_use_dilation);
+    this->detector_ = new DBDetector(FLAGS_det_model_dir, cpu_threads);
 
     this->classifier_ =
         new Classifier(FLAGS_cls_model_dir, cpu_threads, FLAGS_cls_thresh, FLAGS_cls_batch_num);

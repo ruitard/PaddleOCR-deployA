@@ -44,7 +44,7 @@ void DBDetector::Run(cv::Mat &img, std::vector<std::vector<std::vector<int>>> &b
   cv::Mat resize_img;
   img.copyTo(srcimg);
 
-  this->resize_op_.Run(img, resize_img, this->limit_type, this->limit_side_len_, ratio_h, ratio_w,
+  this->resize_op_.Run(img, resize_img, this->limit_type, this->limit_side_len, ratio_h, ratio_w,
                        this->use_tensorrt);
 
   this->normalize_op_.Run(&resize_img, this->mean_, this->scale_,
@@ -86,19 +86,18 @@ void DBDetector::Run(cv::Mat &img, std::vector<std::vector<std::vector<int>>> &b
   cv::Mat cbuf_map(n2, n3, CV_8UC1, (unsigned char *)cbuf.data());
   cv::Mat pred_map(n2, n3, CV_32F, (float *)pred.data());
 
-  const double threshold = this->det_db_thresh_ * 255;
+  const double threshold = this->det_db_thresh * 255;
   const double maxvalue = 255;
   cv::Mat bit_map;
   cv::threshold(cbuf_map, bit_map, threshold, maxvalue, cv::THRESH_BINARY);
-  if (this->use_dilation_) {
+  if (this->use_dilation) {
     cv::Mat dila_ele =
         cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2));
     cv::dilate(bit_map, bit_map, dila_ele);
   }
 
-  boxes = post_processor_.BoxesFromBitmap(
-      pred_map, bit_map, this->det_db_box_thresh_, this->det_db_unclip_ratio_,
-      this->det_db_score_mode_);
+  boxes = post_processor_.BoxesFromBitmap(pred_map, bit_map, this->det_db_box_thresh,
+                                          this->det_db_unclip_ratio, this->det_db_score_mode);
 
   boxes = post_processor_.FilterTagDetRes(boxes, ratio_h, ratio_w, srcimg);
 }

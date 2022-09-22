@@ -243,9 +243,10 @@ float DBPostProcessor::BoxScoreFast(std::vector<std::vector<float>> box_array,
   return score;
 }
 
-std::vector<std::vector<std::vector<int>>> DBPostProcessor::BoxesFromBitmap(
-    const cv::Mat pred, const cv::Mat bitmap, const float &box_thresh,
-    const float &det_db_unclip_ratio, const std::string &det_db_score_mode) {
+std::vector<std::vector<std::vector<int>>>
+DBPostProcessor::BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap, const float &box_thresh,
+                                 const float &det_db_unclip_ratio,
+                                 const std::string_view &det_db_score_mode) {
   const int min_size = 3;
   const int max_candidates = 1000;
 
