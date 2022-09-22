@@ -1,5 +1,4 @@
 find_package(OpenCV CONFIG REQUIRED)
-find_package(gflags CONFIG REQUIRED)
 
 add_library(paddleocr)
 target_include_directories(paddleocr PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
@@ -14,5 +13,4 @@ target_link_libraries(paddleocr
 PRIVATE
     paddle::inference
     opencv_imgcodecs
-    gflags::gflags
 )

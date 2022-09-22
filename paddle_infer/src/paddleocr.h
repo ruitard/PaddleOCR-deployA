@@ -35,9 +35,9 @@ public:
            std::vector<OCRPredictResult> &ocr_results);
 
 private:
-  DBDetector *detector_ = nullptr;
-  Classifier *classifier_ = nullptr;
-  CRNNRecognizer *recognizer_ = nullptr;
+    DBDetector *detector = nullptr;
+    Classifier *classifier = nullptr;
+    CRNNRecognizer *recognizer = nullptr;
 };
 
 } // namespace PaddleOCR
