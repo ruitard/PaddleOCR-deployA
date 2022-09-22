@@ -25,13 +25,8 @@ namespace PaddleOCR {
 class CRNNRecognizer {
 public:
     CRNNRecognizer(const std::string &model_dir, unsigned int cpu_math_library_num_threads,
-                   const std::string &label_path, int rec_batch_num, int rec_img_h, int rec_img_w) {
+                   const std::string &label_path) {
         this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
-        this->rec_batch_num_ = rec_batch_num;
-        this->rec_img_h_ = rec_img_h;
-        this->rec_img_w_ = rec_img_w;
-        std::vector<int> rec_image_shape = {3, rec_img_h, rec_img_w};
-        this->rec_image_shape_ = rec_image_shape;
 
         this->label_list_ = Utility::ReadDict(label_path);
         this->label_list_.insert(this->label_list_.begin(),
@@ -57,10 +52,10 @@ public:
   std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
   bool is_scale_ = true;
   bool use_tensorrt = false;
-  int rec_batch_num_ = 6;
-  int rec_img_h_ = 32;
-  int rec_img_w_ = 320;
-  std::vector<int> rec_image_shape_ = {3, rec_img_h_, rec_img_w_};
+  int rec_batch_num = 6;
+  int rec_img_h = 48;
+  int rec_img_w = 320;
+  std::array<int, 3> rec_image_shape = {3, 48, 320};
   // pre-process
   CrnnResizeImg resize_op_;
   Normalize normalize_op_;

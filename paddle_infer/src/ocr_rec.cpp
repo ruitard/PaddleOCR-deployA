@@ -26,11 +26,11 @@ void CRNNRecognizer::Run(std::vector<cv::Mat> img_list, std::vector<std::string>
     }
     std::vector<int> indices = Utility::argsort(width_list);
 
-    for (int beg_img_no = 0; beg_img_no < img_num; beg_img_no += this->rec_batch_num_) {
-        int end_img_no = std::min(img_num, beg_img_no + this->rec_batch_num_);
+    for (int beg_img_no = 0; beg_img_no < img_num; beg_img_no += this->rec_batch_num) {
+        int end_img_no = std::min(img_num, beg_img_no + this->rec_batch_num);
         int batch_num = end_img_no - beg_img_no;
-        int imgH = this->rec_image_shape_[1];
-        int imgW = this->rec_image_shape_[2];
+        int imgH = this->rec_image_shape[1];
+        int imgW = this->rec_image_shape[2];
         float max_wh_ratio = imgW * 1.0 / imgH;
         for (int ino = beg_img_no; ino < end_img_no; ino++) {
             int h = img_list[indices[ino]].rows;
@@ -46,7 +46,7 @@ void CRNNRecognizer::Run(std::vector<cv::Mat> img_list, std::vector<std::string>
             img_list[indices[ino]].copyTo(srcimg);
             cv::Mat resize_img;
             this->resize_op_.Run(srcimg, resize_img, max_wh_ratio, this->use_tensorrt,
-                                 this->rec_image_shape_);
+                                 this->rec_image_shape);
             this->normalize_op_.Run(&resize_img, this->mean_, this->scale_, this->is_scale_);
             norm_img_batch.push_back(resize_img);
             batch_width = std::max(resize_img.cols, batch_width);

@@ -34,8 +34,7 @@ PPOCR::PPOCR() {
     this->classifier_ = new Classifier(FLAGS_cls_model_dir, cpu_threads);
 
     this->recognizer_ =
-        new CRNNRecognizer(FLAGS_rec_model_dir, cpu_threads, FLAGS_rec_char_dict_path,
-                           FLAGS_rec_batch_num, FLAGS_rec_img_h, FLAGS_rec_img_w);
+        new CRNNRecognizer(FLAGS_rec_model_dir, cpu_threads, FLAGS_rec_char_dict_path);
 };
 
 std::vector<OCRPredictResult> PPOCR::ocr(cv::Mat img, bool det, bool rec,
