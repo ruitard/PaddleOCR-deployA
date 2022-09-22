@@ -31,8 +31,7 @@ PPOCR::PPOCR() {
     auto cpu_threads = std::thread::hardware_concurrency();
     this->detector_ = new DBDetector(FLAGS_det_model_dir, cpu_threads);
 
-    this->classifier_ =
-        new Classifier(FLAGS_cls_model_dir, cpu_threads, FLAGS_cls_thresh, FLAGS_cls_batch_num);
+    this->classifier_ = new Classifier(FLAGS_cls_model_dir, cpu_threads);
 
     this->recognizer_ =
         new CRNNRecognizer(FLAGS_rec_model_dir, cpu_threads, FLAGS_rec_char_dict_path,

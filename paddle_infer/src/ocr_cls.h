@@ -24,13 +24,8 @@ namespace PaddleOCR {
 
 class Classifier {
 public:
-    Classifier(const std::string &model_dir, unsigned int cpu_math_library_num_threads,
-               double cls_thresh, int cls_batch_num) {
+    Classifier(const std::string &model_dir, unsigned int cpu_math_library_num_threads) {
         this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
-
-        this->cls_thresh = cls_thresh;
-        this->cls_batch_num_ = cls_batch_num;
-
         LoadModel(model_dir);
     }
   double cls_thresh = 0.9;
@@ -49,7 +44,7 @@ public:
   std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
   bool is_scale_ = true;
   bool use_tensorrt = false;
-  int cls_batch_num_ = 1;
+  int cls_batch_num = 1;
   // pre-process
   ClsResizeImg resize_op_;
   Normalize normalize_op_;

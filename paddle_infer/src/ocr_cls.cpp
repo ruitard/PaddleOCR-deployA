@@ -20,8 +20,8 @@ void Classifier::Run(std::vector<cv::Mat> img_list, std::vector<int> &cls_labels
 
     int img_num = img_list.size();
     std::vector<int> cls_image_shape = {3, 48, 192};
-    for (int beg_img_no = 0; beg_img_no < img_num; beg_img_no += this->cls_batch_num_) {
-        int end_img_no = std::min(img_num, beg_img_no + this->cls_batch_num_);
+    for (int beg_img_no = 0; beg_img_no < img_num; beg_img_no += this->cls_batch_num) {
+        int end_img_no = std::min(img_num, beg_img_no + this->cls_batch_num);
         int batch_num = end_img_no - beg_img_no;
         // preprocess
         std::vector<cv::Mat> norm_img_batch;
