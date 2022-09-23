@@ -18,7 +18,7 @@
 #include "paddle_inference_api.h"
 
 #include "preprocess_op.h"
-#include "utility.h"
+#include "utility.hpp"
 
 namespace PaddleOCR {
 
