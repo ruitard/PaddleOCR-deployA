@@ -33,87 +33,74 @@ std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) {
 
 PPOCR::PPOCR() {
     auto cpu_threads = std::thread::hardware_concurrency();
-    this->detector = new DBDetector(det_model_dir, cpu_threads);
+    this->detector = std::make_unique<DBDetector>(det_model_dir, cpu_threads);
 
-    this->classifier = new Classifier(cls_model_dir, cpu_threads);
+    this->classifier = std::make_unique<Classifier>(cls_model_dir, cpu_threads);
 
-    this->recognizer = new CRNNRecognizer(rec_model_dir, cpu_threads, rec_char_dict_path);
+    this->recognizer =
+        std::make_unique<CRNNRecognizer>(rec_model_dir, cpu_threads, rec_char_dict_path);
 };
 
-std::vector<OCRPredictResult> PPOCR::ocr(cv::Mat img, bool det, bool rec,
-                                         bool cls) {
+std::vector<OCRPredictResult> PPOCR::ocr(const cv::Mat &img, bool enable_cls) {
+    std::vector<OCRPredictResult> ocr_results;
 
-  std::vector<OCRPredictResult> ocr_result;
-  // det
-  this->det(img, ocr_result);
-  // crop image
-  std::vector<cv::Mat> img_list;
-  for (int j = 0; j < ocr_result.size(); j++) {
-    cv::Mat crop_img;
-    crop_img = Utility::GetRotateCropImage(img, ocr_result[j].box);
-    img_list.push_back(crop_img);
-  }
-  // cls
-  if (cls && this->classifier != nullptr) {
-    this->cls(img_list, ocr_result);
-    for (int i = 0; i < img_list.size(); i++) {
-        if (ocr_result[i].cls_label % 2 == 1 &&
-            ocr_result[i].cls_score > this->classifier->cls_thresh) {
-            cv::rotate(img_list[i], img_list[i], 1);
+    this->det(img, ocr_results);
+    // crop image
+    std::vector<cv::Mat> img_list;
+    for (const auto &result : ocr_results) {
+        img_list.push_back(Utility::GetRotateCropImage(img, result.box));
+    }
+
+    // cls
+    if (enable_cls && this->classifier != nullptr) {
+        this->cls(img_list, ocr_results);
+        for (int i = 0; i < img_list.size(); i++) {
+            if (ocr_results[i].cls_label % 2 == 1 &&
+                ocr_results[i].cls_score > this->classifier->cls_thresh) {
+                cv::rotate(img_list[i], img_list[i], 1);
+            }
         }
     }
-  }
-  // rec
-  if (rec) {
-    this->rec(img_list, ocr_result);
-  }
-  return ocr_result;
+
+    this->rec(img_list, ocr_results);
+
+    return ocr_results;
 }
 
-void PPOCR::det(cv::Mat img, std::vector<OCRPredictResult> &ocr_results) {
-  std::vector<std::vector<std::vector<int>>> boxes;
+void PPOCR::det(const cv::Mat &img, std::vector<OCRPredictResult> &ocr_results) {
+    std::vector<std::vector<std::vector<int>>> boxes;
 
-  this->detector->Run(img, boxes);
+    this->detector->Run(img, boxes);
 
-  for (int i = 0; i < boxes.size(); i++) {
-    OCRPredictResult res;
-    res.box = boxes[i];
-    ocr_results.push_back(res);
-  }
-  // sort boex from top to bottom, from left to right
-  Utility::sorted_boxes(ocr_results);
+    for (int i = 0; i < boxes.size(); i++) {
+        OCRPredictResult res;
+        res.box = boxes[i];
+        ocr_results.push_back(res);
+    }
+    // sort boex from top to bottom, from left to right
+    Utility::sorted_boxes(ocr_results);
 }
 
-void PPOCR::rec(std::vector<cv::Mat> img_list,
-                std::vector<OCRPredictResult> &ocr_results) {
-  std::vector<std::string> rec_texts(img_list.size(), "");
-  std::vector<float> rec_text_scores(img_list.size(), 0);
-  this->recognizer->Run(img_list, rec_texts, rec_text_scores);
-  // output rec results
-  for (int i = 0; i < rec_texts.size(); i++) {
-    ocr_results[i].text = rec_texts[i];
-    ocr_results[i].score = rec_text_scores[i];
-  }
+void PPOCR::rec(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results) {
+    std::vector<std::string> rec_texts(img_list.size(), "");
+    std::vector<float> rec_text_scores(img_list.size(), 0);
+    this->recognizer->Run(img_list, rec_texts, rec_text_scores);
+    // output rec results
+    for (int i = 0; i < rec_texts.size(); i++) {
+        ocr_results[i].text = rec_texts[i];
+        ocr_results[i].score = rec_text_scores[i];
+    }
 }
 
-void PPOCR::cls(std::vector<cv::Mat> img_list,
-                std::vector<OCRPredictResult> &ocr_results) {
-  std::vector<int> cls_labels(img_list.size(), 0);
-  std::vector<float> cls_scores(img_list.size(), 0);
-  this->classifier->Run(img_list, cls_labels, cls_scores);
-  // output cls results
-  for (int i = 0; i < cls_labels.size(); i++) {
-    ocr_results[i].cls_label = cls_labels[i];
-    ocr_results[i].cls_score = cls_scores[i];
-  }
+void PPOCR::cls(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results) {
+    std::vector<int> cls_labels(img_list.size(), 0);
+    std::vector<float> cls_scores(img_list.size(), 0);
+    this->classifier->Run(img_list, cls_labels, cls_scores);
+    // output cls results
+    for (int i = 0; i < cls_labels.size(); i++) {
+        ocr_results[i].cls_label = cls_labels[i];
+        ocr_results[i].cls_score = cls_scores[i];
+    }
 }
-
-PPOCR::~PPOCR() {
-  delete this->detector;
-
-  delete this->classifier;
-
-  delete this->recognizer;
-};
 
 } // namespace PaddleOCR

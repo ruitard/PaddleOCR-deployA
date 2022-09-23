@@ -36,70 +36,68 @@ void DBDetector::LoadModel(const std::string &model_dir) {
     this->predictor_ = paddle_infer::CreatePredictor(config);
 }
 
-void DBDetector::Run(cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes) {
-  float ratio_h{};
-  float ratio_w{};
+void DBDetector::Run(const cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes) {
+    float ratio_h{};
+    float ratio_w{};
 
-  cv::Mat srcimg;
-  cv::Mat resize_img;
-  img.copyTo(srcimg);
+    cv::Mat srcimg;
+    cv::Mat resize_img;
+    img.copyTo(srcimg);
 
-  this->resize_op_.Run(img, resize_img, this->limit_type, this->limit_side_len, ratio_h, ratio_w,
-                       this->use_tensorrt);
+    this->resize_op_.Run(img, resize_img, this->limit_type, this->limit_side_len, ratio_h, ratio_w,
+                         this->use_tensorrt);
 
-  this->normalize_op_.Run(&resize_img, this->mean_, this->scale_,
-                          this->is_scale_);
+    this->normalize_op_.Run(&resize_img, this->mean_, this->scale_, this->is_scale_);
 
-  std::vector<float> input(1 * 3 * resize_img.rows * resize_img.cols, 0.0f);
-  this->permute_op_.Run(&resize_img, input.data());
+    std::vector<float> input(1 * 3 * resize_img.rows * resize_img.cols, 0.0f);
+    this->permute_op_.Run(&resize_img, input.data());
 
-  // Inference.
-  auto input_names = this->predictor_->GetInputNames();
-  auto input_t = this->predictor_->GetInputHandle(input_names[0]);
-  input_t->Reshape({1, 3, resize_img.rows, resize_img.cols});
-  input_t->CopyFromCpu(input.data());
+    // Inference.
+    auto input_names = this->predictor_->GetInputNames();
+    auto input_t = this->predictor_->GetInputHandle(input_names[0]);
+    input_t->Reshape({1, 3, resize_img.rows, resize_img.cols});
+    input_t->CopyFromCpu(input.data());
 
-  this->predictor_->Run();
+    this->predictor_->Run();
 
-  std::vector<float> out_data;
-  auto output_names = this->predictor_->GetOutputNames();
-  auto output_t = this->predictor_->GetOutputHandle(output_names[0]);
-  std::vector<int> output_shape = output_t->shape();
-  int out_num = std::accumulate(output_shape.begin(), output_shape.end(), 1,
-                                std::multiplies<int>());
+    std::vector<float> out_data;
+    auto output_names = this->predictor_->GetOutputNames();
+    auto output_t = this->predictor_->GetOutputHandle(output_names[0]);
+    std::vector<int> output_shape = output_t->shape();
+    int out_num =
+        std::accumulate(output_shape.begin(), output_shape.end(), 1, std::multiplies<int>());
 
-  out_data.resize(out_num);
-  output_t->CopyToCpu(out_data.data());
+    out_data.resize(out_num);
+    output_t->CopyToCpu(out_data.data());
 
-  int n2 = output_shape[2];
-  int n3 = output_shape[3];
-  int n = n2 * n3;
+    int n2 = output_shape[2];
+    int n3 = output_shape[3];
+    int n = n2 * n3;
 
-  std::vector<float> pred(n, 0.0);
-  std::vector<unsigned char> cbuf(n, ' ');
+    std::vector<float> pred(n, 0.0);
+    std::vector<unsigned char> cbuf(n, ' ');
 
-  for (int i = 0; i < n; i++) {
-    pred[i] = float(out_data[i]);
-    cbuf[i] = (unsigned char)((out_data[i]) * 255);
-  }
+    for (int i = 0; i < n; i++) {
+        pred[i] = float(out_data[i]);
+        cbuf[i] = (unsigned char)((out_data[i]) * 255);
+    }
 
-  cv::Mat cbuf_map(n2, n3, CV_8UC1, (unsigned char *)cbuf.data());
-  cv::Mat pred_map(n2, n3, CV_32F, (float *)pred.data());
+    cv::Mat cbuf_map(n2, n3, CV_8UC1, (unsigned char *)cbuf.data());
+    cv::Mat pred_map(n2, n3, CV_32F, (float *)pred.data());
 
-  const double threshold = this->det_db_thresh * 255;
-  const double maxvalue = 255;
-  cv::Mat bit_map;
-  cv::threshold(cbuf_map, bit_map, threshold, maxvalue, cv::THRESH_BINARY);
-  if (this->use_dilation) {
-    cv::Mat dila_ele =
-        cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2));
-    cv::dilate(bit_map, bit_map, dila_ele);
-  }
+    const double threshold = this->det_db_thresh * 255;
+    const double maxvalue = 255;
+    cv::Mat bit_map;
+    cv::threshold(cbuf_map, bit_map, threshold, maxvalue, cv::THRESH_BINARY);
+    if (this->use_dilation) {
+        cv::Mat dila_ele = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2, 2));
+        cv::dilate(bit_map, bit_map, dila_ele);
+    }
 
-  boxes = post_processor_.BoxesFromBitmap(pred_map, bit_map, this->det_db_box_thresh,
-                                          this->det_db_unclip_ratio, this->det_db_score_mode);
+    boxes = post_processor_.BoxesFromBitmap(pred_map, bit_map, this->det_db_box_thresh,
+                                            this->det_db_unclip_ratio, this->det_db_score_mode);
 
-  boxes = post_processor_.FilterTagDetRes(boxes, ratio_h, ratio_w, srcimg);
+    boxes = post_processor_.FilterTagDetRes(boxes, ratio_h, ratio_w, srcimg);
 }
 
 } // namespace PaddleOCR

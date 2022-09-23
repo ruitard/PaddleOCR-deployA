@@ -33,7 +33,7 @@ public:
   void LoadModel(const std::string &model_dir);
 
   // Run predictor
-  void Run(cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes);
+  void Run(const cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes);
 
   private:
   std::shared_ptr<paddle_infer::Predictor> predictor_;

@@ -22,22 +22,21 @@ namespace PaddleOCR {
 
 class PPOCR {
 public:
-  explicit PPOCR();
-  ~PPOCR();
-
-  std::vector<OCRPredictResult> ocr(cv::Mat img, bool det = true, bool rec = true, bool cls = false);
-
-  protected:
-  void det(cv::Mat img, std::vector<OCRPredictResult> &ocr_results);
-  void rec(std::vector<cv::Mat> img_list,
-           std::vector<OCRPredictResult> &ocr_results);
-  void cls(std::vector<cv::Mat> img_list,
-           std::vector<OCRPredictResult> &ocr_results);
+    PPOCR();
+    PPOCR(const PPOCR &) = delete;
+    PPOCR(PPOCR &&) = delete;
+    PPOCR &operator=(const PPOCR &) = delete;
+    PPOCR &operator=(PPOCR &&) = delete;
+    std::vector<OCRPredictResult> ocr(const cv::Mat &img, bool enable_cls = false);
 
 private:
-    DBDetector *detector = nullptr;
-    Classifier *classifier = nullptr;
-    CRNNRecognizer *recognizer = nullptr;
+    void det(const cv::Mat &img, std::vector<OCRPredictResult> &ocr_results);
+    void rec(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results);
+    void cls(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results);
+
+    std::unique_ptr<DBDetector> detector;
+    std::unique_ptr<Classifier> classifier;
+    std::unique_ptr<CRNNRecognizer> recognizer;
 };
 
 } // namespace PaddleOCR

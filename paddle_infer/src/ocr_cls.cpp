@@ -16,7 +16,8 @@
 
 namespace PaddleOCR {
 
-void Classifier::Run(std::vector<cv::Mat> img_list, std::vector<int> &cls_labels, std::vector<float> &cls_scores) {
+void Classifier::Run(const std::vector<cv::Mat> &img_list, std::vector<int> &cls_labels,
+                     std::vector<float> &cls_scores) {
 
     int img_num = img_list.size();
     std::vector<int> cls_image_shape = {3, 48, 192};

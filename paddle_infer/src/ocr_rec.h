@@ -36,30 +36,31 @@ public:
         LoadModel(model_dir);
     }
 
-  // Load Paddle inference model
-  void LoadModel(const std::string &model_dir);
+    // Load Paddle inference model
+    void LoadModel(const std::string &model_dir);
 
-  void Run(std::vector<cv::Mat> img_list, std::vector<std::string> &rec_texts, std::vector<float> &rec_text_scores);
+    void Run(const std::vector<cv::Mat> &img_list, std::vector<std::string> &rec_texts,
+             std::vector<float> &rec_text_scores);
 
-  private:
-  std::shared_ptr<paddle_infer::Predictor> predictor_;
+private:
+    std::shared_ptr<paddle_infer::Predictor> predictor_;
 
-  unsigned int cpu_math_library_num_threads_ = 4;
+    unsigned int cpu_math_library_num_threads_ = 4;
 
-  std::vector<std::string> label_list_;
+    std::vector<std::string> label_list_;
 
-  std::vector<float> mean_ = {0.5f, 0.5f, 0.5f};
-  std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
-  bool is_scale_ = true;
-  bool use_tensorrt = false;
-  int rec_batch_num = 6;
-  int rec_img_h = 48;
-  int rec_img_w = 320;
-  std::array<int, 3> rec_image_shape = {3, 48, 320};
-  // pre-process
-  CrnnResizeImg resize_op_;
-  Normalize normalize_op_;
-  PermuteBatch permute_op_;
+    std::vector<float> mean_ = {0.5f, 0.5f, 0.5f};
+    std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
+    bool is_scale_ = true;
+    bool use_tensorrt = false;
+    int rec_batch_num = 6;
+    int rec_img_h = 48;
+    int rec_img_w = 320;
+    std::array<int, 3> rec_image_shape = {3, 48, 320};
+    // pre-process
+    CrnnResizeImg resize_op_;
+    Normalize normalize_op_;
+    PermuteBatch permute_op_;
 
 }; // class CrnnRecognizer
 

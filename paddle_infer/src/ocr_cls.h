@@ -28,27 +28,26 @@ public:
         this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
         LoadModel(model_dir);
     }
-  double cls_thresh = 0.9;
+    double cls_thresh = 0.9;
+    // Load Paddle inference model
+    void LoadModel(const std::string &model_dir);
 
-  // Load Paddle inference model
-  void LoadModel(const std::string &model_dir);
+    void Run(const std::vector<cv::Mat> &img_list, std::vector<int> &cls_labels,
+             std::vector<float> &cls_scores);
 
-  void Run(std::vector<cv::Mat> img_list, std::vector<int> &cls_labels, std::vector<float> &cls_scores);
+private:
+    std::shared_ptr<paddle_infer::Predictor> predictor_;
+    unsigned int cpu_math_library_num_threads_ = 4;
 
-  private:
-  std::shared_ptr<paddle_infer::Predictor> predictor_;
-
-  unsigned int cpu_math_library_num_threads_ = 4;
-
-  std::vector<float> mean_ = {0.5f, 0.5f, 0.5f};
-  std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
-  bool is_scale_ = true;
-  bool use_tensorrt = false;
-  int cls_batch_num = 1;
-  // pre-process
-  ClsResizeImg resize_op_;
-  Normalize normalize_op_;
-  PermuteBatch permute_op_;
+    std::vector<float> mean_ = {0.5f, 0.5f, 0.5f};
+    std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
+    bool is_scale_ = true;
+    bool use_tensorrt = false;
+    int cls_batch_num = 1;
+    // pre-process
+    ClsResizeImg resize_op_;
+    Normalize normalize_op_;
+    PermuteBatch permute_op_;
 
 }; // class Classifier
 
