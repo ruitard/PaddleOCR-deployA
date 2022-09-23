@@ -43,39 +43,6 @@ std::vector<std::string> Utility::ReadDict(const std::string &path) {
   return m_vec;
 }
 
-// list all files under a directory
-void Utility::GetAllFiles(const char *dir_name,
-                          std::vector<std::string> &all_inputs) {
-  if (NULL == dir_name) {
-    std::cout << " dir_name is null ! " << std::endl;
-    return;
-  }
-  struct stat s;
-  stat(dir_name, &s);
-  if (!S_ISDIR(s.st_mode)) {
-    std::cout << "dir_name is not a valid directory !" << std::endl;
-    all_inputs.push_back(dir_name);
-    return;
-  } else {
-    struct dirent *filename; // return value for readdir()
-    DIR *dir;                // return value for opendir()
-    dir = opendir(dir_name);
-    if (NULL == dir) {
-      std::cout << "Can not open dir " << dir_name << std::endl;
-      return;
-    }
-    std::cout << "Successfully opened the dir !" << std::endl;
-    while ((filename = readdir(dir)) != NULL) {
-      if (strcmp(filename->d_name, ".") == 0 ||
-          strcmp(filename->d_name, "..") == 0)
-        continue;
-      // img_dir + std::string("/") + all_inputs[0];
-      all_inputs.push_back(dir_name + std::string("/") +
-                           std::string(filename->d_name));
-    }
-  }
-}
-
 cv::Mat Utility::GetRotateCropImage(const cv::Mat &srcimage,
                                     std::vector<std::vector<int>> box) {
   cv::Mat image;

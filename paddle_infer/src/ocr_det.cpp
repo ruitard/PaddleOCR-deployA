@@ -16,12 +16,13 @@
 
 namespace PaddleOCR {
 
-void DBDetector::LoadModel(const std::string &model_dir) {
+void DBDetector::LoadModel(const fs::path &model_dir) {
     paddle_infer::Config config;
-    config.SetModel(model_dir + "/inference.pdmodel", model_dir + "/inference.pdiparams");
+    config.SetModel((model_dir / "inference.pdmodel").string(),
+                    (model_dir / "inference.pdiparams").string());
 
     config.DisableGpu();
-    config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
+    config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads);
 
     // use zero_copy_run as default
     config.SwitchUseFeedFetchOps(false);
@@ -33,7 +34,7 @@ void DBDetector::LoadModel(const std::string &model_dir) {
     config.EnableMemoryOptim();
     config.DisableGlogInfo();
 
-    this->predictor_ = paddle_infer::CreatePredictor(config);
+    this->predictor = paddle_infer::CreatePredictor(config);
 }
 
 void DBDetector::Run(const cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes) {
@@ -53,16 +54,16 @@ void DBDetector::Run(const cv::Mat &img, std::vector<std::vector<std::vector<int
     this->permute_op_.Run(&resize_img, input.data());
 
     // Inference.
-    auto input_names = this->predictor_->GetInputNames();
-    auto input_t = this->predictor_->GetInputHandle(input_names[0]);
+    auto input_names = this->predictor->GetInputNames();
+    auto input_t = this->predictor->GetInputHandle(input_names[0]);
     input_t->Reshape({1, 3, resize_img.rows, resize_img.cols});
     input_t->CopyFromCpu(input.data());
 
-    this->predictor_->Run();
+    this->predictor->Run();
 
     std::vector<float> out_data;
-    auto output_names = this->predictor_->GetOutputNames();
-    auto output_t = this->predictor_->GetOutputHandle(output_names[0]);
+    auto output_names = this->predictor->GetOutputNames();
+    auto output_t = this->predictor->GetOutputHandle(output_names[0]);
     std::vector<int> output_shape = output_t->shape();
     int out_num =
         std::accumulate(output_shape.begin(), output_shape.end(), 1, std::multiplies<int>());

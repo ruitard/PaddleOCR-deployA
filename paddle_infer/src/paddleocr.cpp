@@ -18,10 +18,10 @@
 
 namespace PaddleOCR {
 
-static const std::string det_model_dir{"ch_PP-OCRv3_det_slim_infer"};
-static const std::string cls_model_dir{"ch_ppocr_mobile_v2.0_cls_slim_infer"};
-static const std::string rec_model_dir{"ch_PP-OCRv3_rec_slim_infer"};
-static const std::string rec_char_dict_path{"ppocr_keys_v1.txt"};
+static const fs::path det_model_dir{"ch_PP-OCRv3_det_slim_infer"};
+static const fs::path cls_model_dir{"ch_ppocr_mobile_v2.0_cls_slim_infer"};
+static const fs::path rec_model_dir{"ch_PP-OCRv3_rec_slim_infer"};
+static const fs::path rec_char_dict_path{"ppocr_keys_v1.txt"};
 
 PaddleOCR::PaddleOCR() {}
 

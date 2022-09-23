@@ -26,7 +26,7 @@ class CRNNRecognizer {
 public:
     CRNNRecognizer(const std::string &model_dir, unsigned int cpu_math_library_num_threads,
                    const std::string &label_path) {
-        this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
+        this->cpu_math_library_num_threads = cpu_math_library_num_threads;
 
         this->label_list_ = Utility::ReadDict(label_path);
         this->label_list_.insert(this->label_list_.begin(),
@@ -37,15 +37,15 @@ public:
     }
 
     // Load Paddle inference model
-    void LoadModel(const std::string &model_dir);
+    void LoadModel(const fs::path &model_dir);
 
     void Run(const std::vector<cv::Mat> &img_list, std::vector<std::string> &rec_texts,
              std::vector<float> &rec_text_scores);
 
 private:
-    std::shared_ptr<paddle_infer::Predictor> predictor_;
+    std::shared_ptr<paddle_infer::Predictor> predictor;
 
-    unsigned int cpu_math_library_num_threads_ = 4;
+    unsigned int cpu_math_library_num_threads = 4;
 
     std::vector<std::string> label_list_;
 

@@ -25,19 +25,19 @@ namespace PaddleOCR {
 class Classifier {
 public:
     Classifier(const std::string &model_dir, unsigned int cpu_math_library_num_threads) {
-        this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
+        this->cpu_math_library_num_threads = cpu_math_library_num_threads;
         LoadModel(model_dir);
     }
     double cls_thresh = 0.9;
     // Load Paddle inference model
-    void LoadModel(const std::string &model_dir);
+    void LoadModel(const fs::path &model_dir);
 
     void Run(const std::vector<cv::Mat> &img_list, std::vector<int> &cls_labels,
              std::vector<float> &cls_scores);
 
 private:
-    std::shared_ptr<paddle_infer::Predictor> predictor_;
-    unsigned int cpu_math_library_num_threads_ = 4;
+    std::shared_ptr<paddle_infer::Predictor> predictor;
+    unsigned int cpu_math_library_num_threads = 4;
 
     std::vector<float> mean_ = {0.5f, 0.5f, 0.5f};
     std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};

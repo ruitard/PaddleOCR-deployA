@@ -25,43 +25,43 @@ namespace PaddleOCR {
 class DBDetector {
 public:
     DBDetector(const std::string &model_dir, unsigned int cpu_math_library_num_threads) {
-        this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
+        this->cpu_math_library_num_threads = cpu_math_library_num_threads;
         LoadModel(model_dir);
     }
 
   // Load Paddle inference model
-  void LoadModel(const std::string &model_dir);
+    void LoadModel(const fs::path &model_dir);
 
-  // Run predictor
-  void Run(const cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes);
+    // Run predictor
+    void Run(const cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes);
 
-  private:
-  std::shared_ptr<paddle_infer::Predictor> predictor_;
+private:
+    std::shared_ptr<paddle_infer::Predictor> predictor;
 
-  unsigned int cpu_math_library_num_threads_ = 4;
+    unsigned int cpu_math_library_num_threads = 4;
 
-  std::string limit_type = "max";
-  int limit_side_len = 960;
+    std::string limit_type = "max";
+    int limit_side_len = 960;
 
-  double det_db_thresh = 0.3;
-  double det_db_box_thresh = 0.6;
-  double det_db_unclip_ratio = 1.5;
-  std::string det_db_score_mode = "slow";
-  bool use_dilation = false;
+    double det_db_thresh = 0.3;
+    double det_db_box_thresh = 0.6;
+    double det_db_unclip_ratio = 1.5;
+    std::string det_db_score_mode = "slow";
+    bool use_dilation = false;
 
-  bool use_tensorrt = false;
+    bool use_tensorrt = false;
 
-  std::vector<float> mean_ = {0.485f, 0.456f, 0.406f};
-  std::vector<float> scale_ = {1 / 0.229f, 1 / 0.224f, 1 / 0.225f};
-  bool is_scale_ = true;
+    std::vector<float> mean_ = {0.485f, 0.456f, 0.406f};
+    std::vector<float> scale_ = {1 / 0.229f, 1 / 0.224f, 1 / 0.225f};
+    bool is_scale_ = true;
 
-  // pre-process
-  ResizeImgType0 resize_op_;
-  Normalize normalize_op_;
-  Permute permute_op_;
+    // pre-process
+    ResizeImgType0 resize_op_;
+    Normalize normalize_op_;
+    Permute permute_op_;
 
-  // post-process
-  DBPostProcessor post_processor_;
+    // post-process
+    DBPostProcessor post_processor_;
 };
 
 } // namespace PaddleOCR

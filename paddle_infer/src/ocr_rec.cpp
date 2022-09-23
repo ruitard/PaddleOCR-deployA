@@ -56,15 +56,15 @@ void CRNNRecognizer::Run(const std::vector<cv::Mat> &img_list, std::vector<std::
         this->permute_op_.Run(norm_img_batch, input.data());
 
         // Inference.
-        auto input_names = this->predictor_->GetInputNames();
-        auto input_t = this->predictor_->GetInputHandle(input_names[0]);
+        auto input_names = this->predictor->GetInputNames();
+        auto input_t = this->predictor->GetInputHandle(input_names[0]);
         input_t->Reshape({batch_num, 3, imgH, batch_width});
         input_t->CopyFromCpu(input.data());
-        this->predictor_->Run();
+        this->predictor->Run();
 
         std::vector<float> predict_batch;
-        auto output_names = this->predictor_->GetOutputNames();
-        auto output_t = this->predictor_->GetOutputHandle(output_names[0]);
+        auto output_names = this->predictor->GetOutputNames();
+        auto output_t = this->predictor->GetOutputHandle(output_names[0]);
         auto predict_shape = output_t->shape();
 
         int out_num = std::accumulate(predict_shape.begin(), predict_shape.end(), 1, std::multiplies<int>());
@@ -106,26 +106,27 @@ void CRNNRecognizer::Run(const std::vector<cv::Mat> &img_list, std::vector<std::
     }
 }
 
-void CRNNRecognizer::LoadModel(const std::string &model_dir) {
-  paddle_infer::Config config;
-  config.SetModel(model_dir + "/inference.pdmodel", model_dir + "/inference.pdiparams");
-  config.DisableGpu();
-  config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads_);
+void CRNNRecognizer::LoadModel(const fs::path &model_dir) {
+    paddle_infer::Config config;
+    config.SetModel((model_dir / "inference.pdmodel").string(),
+                    (model_dir / "inference.pdiparams").string());
+    config.DisableGpu();
+    config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads);
 
-  // get pass_builder object
-  auto pass_builder = config.pass_builder();
-  // delete "matmul_transpose_reshape_fuse_pass"
-  pass_builder->DeletePass("matmul_transpose_reshape_fuse_pass");
-  config.SwitchUseFeedFetchOps(false);
-  // true for multiple input
-  config.SwitchSpecifyInputNames(true);
+    // get pass_builder object
+    auto pass_builder = config.pass_builder();
+    // delete "matmul_transpose_reshape_fuse_pass"
+    pass_builder->DeletePass("matmul_transpose_reshape_fuse_pass");
+    config.SwitchUseFeedFetchOps(false);
+    // true for multiple input
+    config.SwitchSpecifyInputNames(true);
 
-  config.SwitchIrOptim(true);
+    config.SwitchIrOptim(true);
 
-  config.EnableMemoryOptim();
-  config.DisableGlogInfo();
+    config.EnableMemoryOptim();
+    config.DisableGlogInfo();
 
-  this->predictor_ = paddle_infer::CreatePredictor(config);
+    this->predictor = paddle_infer::CreatePredictor(config);
 }
 
 } // namespace PaddleOCR
