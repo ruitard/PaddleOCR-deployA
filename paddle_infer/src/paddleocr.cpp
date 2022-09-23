@@ -33,12 +33,9 @@ std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) {
 
 PPOCR::PPOCR() {
     auto cpu_threads = std::thread::hardware_concurrency();
-    this->detector = std::make_unique<DBDetector>(det_model_dir, cpu_threads);
-
-    this->classifier = std::make_unique<Classifier>(cls_model_dir, cpu_threads);
-
-    this->recognizer =
-        std::make_unique<CRNNRecognizer>(rec_model_dir, cpu_threads, rec_char_dict_path);
+    detector = std::make_unique<DBDetector>(det_model_dir, cpu_threads);
+    classifier = std::make_unique<Classifier>(cls_model_dir, cpu_threads);
+    recognizer = std::make_unique<CRNNRecognizer>(rec_model_dir, cpu_threads, rec_char_dict_path);
 };
 
 std::vector<OCRPredictResult> PPOCR::ocr(const cv::Mat &img, bool enable_cls) {

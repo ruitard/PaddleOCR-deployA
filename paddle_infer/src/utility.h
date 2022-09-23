@@ -15,9 +15,6 @@
 #pragma once
 
 #include <iomanip>
-#include <iostream>
-#include <ostream>
-#include <stdlib.h>
 #include <vector>
 
 #include <algorithm>
@@ -35,31 +32,30 @@ namespace PaddleOCR {
 
 class Utility {
 public:
-  static std::vector<std::string> ReadDict(const std::string &path);
+    static std::vector<std::string> ReadDict(const fs::path &path);
 
-  template <class ForwardIterator>
-  inline static size_t argmax(ForwardIterator first, ForwardIterator last) {
-    return std::distance(first, std::max_element(first, last));
-  }
+    template <class ForwardIterator>
+    inline static size_t argmax(ForwardIterator first, ForwardIterator last) {
+        return std::distance(first, std::max_element(first, last));
+    }
 
-  static cv::Mat GetRotateCropImage(const cv::Mat &srcimage,
-                                    std::vector<std::vector<int>> box);
+    static cv::Mat GetRotateCropImage(const cv::Mat &srcimage,
+                                      const std::vector<std::vector<int>> &box);
 
-  static std::vector<int> argsort(const std::vector<float> &array);
+    static std::vector<int> argsort(const std::vector<float> &array);
 
-  static cv::Mat crop_image(cv::Mat &img, const std::vector<int> &area);
-  static cv::Mat crop_image(cv::Mat &img, const std::vector<float> &area);
+    static cv::Mat crop_image(cv::Mat &img, const std::vector<int> &area);
+    static cv::Mat crop_image(cv::Mat &img, const std::vector<float> &area);
 
-  static void sorted_boxes(std::vector<OCRPredictResult> &ocr_result);
+    static void sorted_boxes(std::vector<OCRPredictResult> &ocr_result);
 
-  static std::vector<int> xyxyxyxy2xyxy(std::vector<std::vector<int>> &box);
-  static std::vector<int> xyxyxyxy2xyxy(std::vector<int> &box);
+    static std::vector<int> xyxyxyxy2xyxy(std::vector<std::vector<int>> &box);
+    static std::vector<int> xyxyxyxy2xyxy(std::vector<int> &box);
 
-  static float fast_exp(float x);
-  static std::vector<float>
-  activation_function_softmax(std::vector<float> &src);
-  static float iou(std::vector<int> &box1, std::vector<int> &box2);
-  static float iou(std::vector<float> &box1, std::vector<float> &box2);
+    static float fast_exp(float x);
+    static std::vector<float> activation_function_softmax(std::vector<float> &src);
+    static float iou(std::vector<int> &box1, std::vector<int> &box2);
+    static float iou(std::vector<float> &box1, std::vector<float> &box2);
 
 private:
   static bool comparison_box(const OCRPredictResult &result1,

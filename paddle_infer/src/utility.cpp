@@ -12,90 +12,78 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <dirent.h>
 #include "utility.h"
 #include <iostream>
-#include <ostream>
-
+#include <fstream>
 #include <vector>
-
-#ifdef _WIN32
-#include <direct.h>
-#else
-#include <sys/stat.h>
-#endif
 
 namespace PaddleOCR {
 
-std::vector<std::string> Utility::ReadDict(const std::string &path) {
-  std::ifstream in(path);
-  std::string line;
-  std::vector<std::string> m_vec;
-  if (in) {
-    while (getline(in, line)) {
-      m_vec.push_back(line);
+std::vector<std::string> Utility::ReadDict(const fs::path &path) {
+    std::vector<std::string> label_vec;
+    if (std::ifstream ifs{path}; ifs.is_open()) {
+        std::string line;
+        while (std::getline(ifs, line)) {
+            label_vec.push_back(line);
+        }
+    } else {
+        throw std::runtime_error("no such label file: " + path.string());
     }
-  } else {
-    std::cout << "no such label file: " << path << ", exit the program..."
-              << std::endl;
-    exit(1);
-  }
-  return m_vec;
+    return label_vec;
 }
 
 cv::Mat Utility::GetRotateCropImage(const cv::Mat &srcimage,
-                                    std::vector<std::vector<int>> box) {
-  cv::Mat image;
-  srcimage.copyTo(image);
-  std::vector<std::vector<int>> points = box;
+                                    const std::vector<std::vector<int>> &box) {
+    cv::Mat image;
+    srcimage.copyTo(image);
+    std::vector<std::vector<int>> points = box;
 
-  int x_collect[4] = {box[0][0], box[1][0], box[2][0], box[3][0]};
-  int y_collect[4] = {box[0][1], box[1][1], box[2][1], box[3][1]};
-  int left = int(*std::min_element(x_collect, x_collect + 4));
-  int right = int(*std::max_element(x_collect, x_collect + 4));
-  int top = int(*std::min_element(y_collect, y_collect + 4));
-  int bottom = int(*std::max_element(y_collect, y_collect + 4));
+    int x_collect[4] = {box[0][0], box[1][0], box[2][0], box[3][0]};
+    int y_collect[4] = {box[0][1], box[1][1], box[2][1], box[3][1]};
+    int left = int(*std::min_element(x_collect, x_collect + 4));
+    int right = int(*std::max_element(x_collect, x_collect + 4));
+    int top = int(*std::min_element(y_collect, y_collect + 4));
+    int bottom = int(*std::max_element(y_collect, y_collect + 4));
 
-  cv::Mat img_crop;
-  image(cv::Rect(left, top, right - left, bottom - top)).copyTo(img_crop);
+    cv::Mat img_crop;
+    image(cv::Rect(left, top, right - left, bottom - top)).copyTo(img_crop);
 
-  for (int i = 0; i < points.size(); i++) {
-    points[i][0] -= left;
-    points[i][1] -= top;
-  }
+    for (int i = 0; i < points.size(); i++) {
+        points[i][0] -= left;
+        points[i][1] -= top;
+    }
 
-  int img_crop_width = int(sqrt(pow(points[0][0] - points[1][0], 2) +
-                                pow(points[0][1] - points[1][1], 2)));
-  int img_crop_height = int(sqrt(pow(points[0][0] - points[3][0], 2) +
-                                 pow(points[0][1] - points[3][1], 2)));
+    int img_crop_width =
+        int(sqrt(pow(points[0][0] - points[1][0], 2) + pow(points[0][1] - points[1][1], 2)));
+    int img_crop_height =
+        int(sqrt(pow(points[0][0] - points[3][0], 2) + pow(points[0][1] - points[3][1], 2)));
 
-  cv::Point2f pts_std[4];
-  pts_std[0] = cv::Point2f(0., 0.);
-  pts_std[1] = cv::Point2f(img_crop_width, 0.);
-  pts_std[2] = cv::Point2f(img_crop_width, img_crop_height);
-  pts_std[3] = cv::Point2f(0.f, img_crop_height);
+    cv::Point2f pts_std[4];
+    pts_std[0] = cv::Point2f(0., 0.);
+    pts_std[1] = cv::Point2f(img_crop_width, 0.);
+    pts_std[2] = cv::Point2f(img_crop_width, img_crop_height);
+    pts_std[3] = cv::Point2f(0.f, img_crop_height);
 
-  cv::Point2f pointsf[4];
-  pointsf[0] = cv::Point2f(points[0][0], points[0][1]);
-  pointsf[1] = cv::Point2f(points[1][0], points[1][1]);
-  pointsf[2] = cv::Point2f(points[2][0], points[2][1]);
-  pointsf[3] = cv::Point2f(points[3][0], points[3][1]);
+    cv::Point2f pointsf[4];
+    pointsf[0] = cv::Point2f(points[0][0], points[0][1]);
+    pointsf[1] = cv::Point2f(points[1][0], points[1][1]);
+    pointsf[2] = cv::Point2f(points[2][0], points[2][1]);
+    pointsf[3] = cv::Point2f(points[3][0], points[3][1]);
 
-  cv::Mat M = cv::getPerspectiveTransform(pointsf, pts_std);
+    cv::Mat M = cv::getPerspectiveTransform(pointsf, pts_std);
 
-  cv::Mat dst_img;
-  cv::warpPerspective(img_crop, dst_img, M,
-                      cv::Size(img_crop_width, img_crop_height),
-                      cv::BORDER_REPLICATE);
+    cv::Mat dst_img;
+    cv::warpPerspective(img_crop, dst_img, M, cv::Size(img_crop_width, img_crop_height),
+                        cv::BORDER_REPLICATE);
 
-  if (float(dst_img.rows) >= float(dst_img.cols) * 1.5) {
-    cv::Mat srcCopy = cv::Mat(dst_img.rows, dst_img.cols, dst_img.depth());
-    cv::transpose(dst_img, srcCopy);
-    cv::flip(srcCopy, srcCopy, 0);
-    return srcCopy;
-  } else {
-    return dst_img;
-  }
+    if (float(dst_img.rows) >= float(dst_img.cols) * 1.5) {
+        cv::Mat srcCopy = cv::Mat(dst_img.rows, dst_img.cols, dst_img.depth());
+        cv::transpose(dst_img, srcCopy);
+        cv::flip(srcCopy, srcCopy, 0);
+        return srcCopy;
+    } else {
+        return dst_img;
+    }
 }
 
 std::vector<int> Utility::argsort(const std::vector<float> &array) {
