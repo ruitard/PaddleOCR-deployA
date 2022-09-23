@@ -30,44 +30,21 @@
 
 namespace PaddleOCR {
 
-class Utility {
-public:
-    static std::vector<std::string> ReadDict(const fs::path &path);
+namespace Utility {
 
-    template <class ForwardIterator>
-    inline static size_t argmax(ForwardIterator first, ForwardIterator last) {
-        return std::distance(first, std::max_element(first, last));
-    }
+std::vector<std::string> ReadDict(const fs::path &path);
 
-    static cv::Mat GetRotateCropImage(const cv::Mat &srcimage,
-                                      const std::vector<std::vector<int>> &box);
+template <class ForwardIterator>
+inline static size_t argmax(ForwardIterator first, ForwardIterator last) {
+    return std::distance(first, std::max_element(first, last));
+}
 
-    static std::vector<int> argsort(const std::vector<float> &array);
+cv::Mat GetRotateCropImage(const cv::Mat &srcimage, const std::vector<std::vector<int>> &box);
 
-    static cv::Mat crop_image(cv::Mat &img, const std::vector<int> &area);
-    static cv::Mat crop_image(cv::Mat &img, const std::vector<float> &area);
+std::vector<int> argsort(const std::vector<float> &array);
 
-    static void sorted_boxes(std::vector<OCRPredictResult> &ocr_result);
+void sorted_boxes(std::vector<OCRPredictResult> &ocr_result);
 
-    static std::vector<int> xyxyxyxy2xyxy(std::vector<std::vector<int>> &box);
-    static std::vector<int> xyxyxyxy2xyxy(std::vector<int> &box);
-
-    static float fast_exp(float x);
-    static std::vector<float> activation_function_softmax(std::vector<float> &src);
-    static float iou(std::vector<int> &box1, std::vector<int> &box2);
-    static float iou(std::vector<float> &box1, std::vector<float> &box2);
-
-private:
-  static bool comparison_box(const OCRPredictResult &result1,
-                             const OCRPredictResult &result2) {
-    if (result1.box[0][1] < result2.box[0][1]) {
-      return true;
-    } else if (result1.box[0][1] == result2.box[0][1]) {
-      return result1.box[0][0] < result2.box[0][0];
-    } else {
-      return false;
-    }
-  }
-};
+} // namespace Utility
 
 } // namespace PaddleOCR
