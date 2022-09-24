@@ -67,24 +67,4 @@ void Classifier::Run(const std::vector<cv::Mat> &img_list, std::vector<int> &cls
     }
 }
 
-void Classifier::LoadModel(const fs::path &model_dir) {
-    paddle_infer::Config config;
-    config.SetModel((model_dir / "inference.pdmodel").string(),
-                    (model_dir / "inference.pdiparams").string());
-
-    config.DisableGpu();
-    config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads);
-
-    // false for zero copy tensor
-    config.SwitchUseFeedFetchOps(false);
-    // true for multiple input
-    config.SwitchSpecifyInputNames(true);
-
-    config.SwitchIrOptim(true);
-
-    config.EnableMemoryOptim();
-    config.DisableGlogInfo();
-
-    this->predictor = paddle_infer::CreatePredictor(config);
-}
 } // namespace PaddleOCR

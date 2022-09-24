@@ -5,4 +5,3 @@ PRIVATE
     paddleocr.cpp
     postprocess_op.cpp preprocess_op.cpp utility.cpp
 )
-target_include_directories(paddleocr PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})

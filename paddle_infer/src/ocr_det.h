@@ -14,9 +14,6 @@
 
 #pragma once
 
-#include "paddle_api.h"
-#include "paddle_inference_api.h"
-
 #include "postprocess_op.h"
 #include "preprocess_op.h"
 
@@ -24,21 +21,12 @@ namespace PaddleOCR {
 
 class DBDetector {
 public:
-    DBDetector(const std::string &model_dir, unsigned int cpu_math_library_num_threads) {
-        this->cpu_math_library_num_threads = cpu_math_library_num_threads;
-        LoadModel(model_dir);
-    }
+    explicit DBDetector(const fs::path &model_path) : predictor{create_predictor(model_path)} {}
 
-  // Load Paddle inference model
-    void LoadModel(const fs::path &model_dir);
-
-    // Run predictor
     void Run(const cv::Mat &img, std::vector<Box> &boxes);
 
 private:
     std::shared_ptr<paddle_infer::Predictor> predictor;
-
-    unsigned int cpu_math_library_num_threads = 4;
 
     std::string limit_type = "max";
     int limit_side_len = 960;

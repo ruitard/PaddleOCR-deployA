@@ -16,27 +16,6 @@
 
 namespace PaddleOCR {
 
-void DBDetector::LoadModel(const fs::path &model_dir) {
-    paddle_infer::Config config;
-    config.SetModel((model_dir / "inference.pdmodel").string(),
-                    (model_dir / "inference.pdiparams").string());
-
-    config.DisableGpu();
-    config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads);
-
-    // use zero_copy_run as default
-    config.SwitchUseFeedFetchOps(false);
-    // true for multiple input
-    config.SwitchSpecifyInputNames(true);
-
-    config.SwitchIrOptim(true);
-
-    config.EnableMemoryOptim();
-    config.DisableGlogInfo();
-
-    this->predictor = paddle_infer::CreatePredictor(config);
-}
-
 void DBDetector::Run(const cv::Mat &img, std::vector<Box> &boxes) {
     float ratio_h{};
     float ratio_w{};

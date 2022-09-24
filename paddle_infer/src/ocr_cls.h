@@ -14,9 +14,6 @@
 
 #pragma once
 
-#include "paddle_api.h"
-#include "paddle_inference_api.h"
-
 #include "preprocess_op.h"
 #include "utility.hpp"
 
@@ -24,20 +21,13 @@ namespace PaddleOCR {
 
 class Classifier {
 public:
-    Classifier(const std::string &model_dir, unsigned int cpu_math_library_num_threads) {
-        this->cpu_math_library_num_threads = cpu_math_library_num_threads;
-        LoadModel(model_dir);
-    }
+    explicit Classifier(const fs::path &model_path) : predictor{create_predictor(model_path)} {}
     double cls_thresh = 0.9;
-    // Load Paddle inference model
-    void LoadModel(const fs::path &model_dir);
-
     void Run(const std::vector<cv::Mat> &img_list, std::vector<int> &cls_labels,
              std::vector<float> &cls_scores);
 
 private:
     std::shared_ptr<paddle_infer::Predictor> predictor;
-    unsigned int cpu_math_library_num_threads = 4;
 
     std::vector<float> mean_ = {0.5f, 0.5f, 0.5f};
     std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};

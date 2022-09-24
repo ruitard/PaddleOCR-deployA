@@ -13,11 +13,11 @@
 // limitations under the License.
 
 #include <string_view>
-#include <thread>
 
 #include "ocr_cls.h"
 #include "ocr_det.h"
 #include "ocr_rec.h"
+#include "paddleocr.hpp"
 
 namespace PaddleOCR {
 
@@ -61,10 +61,9 @@ std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) {
 }
 
 PPOCR::PPOCR() {
-    auto cpu_threads = std::thread::hardware_concurrency();
-    detector = std::make_unique<DBDetector>(det_model_dir, cpu_threads);
-    classifier = std::make_unique<Classifier>(cls_model_dir, cpu_threads);
-    recognizer = std::make_unique<CRNNRecognizer>(rec_model_dir, cpu_threads, rec_char_dict_path);
+    detector = std::make_unique<DBDetector>(det_model_dir);
+    classifier = std::make_unique<Classifier>(cls_model_dir);
+    recognizer = std::make_unique<CRNNRecognizer>(rec_model_dir, rec_char_dict_path);
 };
 
 std::vector<OCRPredictResult> PPOCR::ocr(const cv::Mat &img, bool enable_cls) {

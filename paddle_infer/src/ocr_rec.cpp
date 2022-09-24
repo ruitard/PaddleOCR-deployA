@@ -106,27 +106,4 @@ void CRNNRecognizer::Run(const std::vector<cv::Mat> &img_list, std::vector<std::
     }
 }
 
-void CRNNRecognizer::LoadModel(const fs::path &model_dir) {
-    paddle_infer::Config config;
-    config.SetModel((model_dir / "inference.pdmodel").string(),
-                    (model_dir / "inference.pdiparams").string());
-    config.DisableGpu();
-    config.SetCpuMathLibraryNumThreads(this->cpu_math_library_num_threads);
-
-    // get pass_builder object
-    auto pass_builder = config.pass_builder();
-    // delete "matmul_transpose_reshape_fuse_pass"
-    pass_builder->DeletePass("matmul_transpose_reshape_fuse_pass");
-    config.SwitchUseFeedFetchOps(false);
-    // true for multiple input
-    config.SwitchSpecifyInputNames(true);
-
-    config.SwitchIrOptim(true);
-
-    config.EnableMemoryOptim();
-    config.DisableGlogInfo();
-
-    this->predictor = paddle_infer::CreatePredictor(config);
-}
-
 } // namespace PaddleOCR
