@@ -30,13 +30,13 @@ void Classifier::Run(const std::vector<cv::Mat> &img_list, std::vector<int> &cls
             cv::Mat srcimg;
             img_list[ino].copyTo(srcimg);
             cv::Mat resize_img;
-            this->resize_op_.Run(srcimg, resize_img, this->use_tensorrt, cls_image_shape);
+            this->resize_op.Run(srcimg, resize_img, this->use_tensorrt, cls_image_shape);
 
-            this->normalize_op_.Run(&resize_img, this->mean_, this->scale_, this->is_scale_);
+            this->normalize_op.Run(&resize_img, this->mean, this->scale, this->is_scale);
             norm_img_batch.push_back(resize_img);
         }
         std::vector<float> input(batch_num * cls_image_shape[0] * cls_image_shape[1] * cls_image_shape[2], 0.0f);
-        this->permute_op_.Run(norm_img_batch, input.data());
+        this->permute_op.Run(norm_img_batch, input.data());
 
         // inference.
         auto input_names = this->predictor->GetInputNames();

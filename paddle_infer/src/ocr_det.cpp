@@ -24,13 +24,13 @@ void DBDetector::Run(const cv::Mat &img, std::vector<Box> &boxes) {
     cv::Mat resize_img;
     img.copyTo(srcimg);
 
-    this->resize_op_.Run(img, resize_img, this->limit_type, this->limit_side_len, ratio_h, ratio_w,
-                         this->use_tensorrt);
+    this->resize_op.Run(img, resize_img, this->limit_type, this->limit_side_len, ratio_h, ratio_w,
+                        this->use_tensorrt);
 
-    this->normalize_op_.Run(&resize_img, this->mean_, this->scale_, this->is_scale_);
+    this->normalize_op.Run(&resize_img, this->mean, this->scale, this->is_scale);
 
     std::vector<float> input(1 * 3 * resize_img.rows * resize_img.cols, 0.0f);
-    this->permute_op_.Run(&resize_img, input.data());
+    this->permute_op.Run(&resize_img, input.data());
 
     // Inference.
     auto input_names = this->predictor->GetInputNames();
@@ -74,10 +74,10 @@ void DBDetector::Run(const cv::Mat &img, std::vector<Box> &boxes) {
         cv::dilate(bit_map, bit_map, dila_ele);
     }
 
-    boxes = post_processor_.BoxesFromBitmap(pred_map, bit_map, this->det_db_box_thresh,
-                                            this->det_db_unclip_ratio, this->det_db_score_mode);
+    boxes = post_processor.BoxesFromBitmap(pred_map, bit_map, this->det_db_box_thresh,
+                                           this->det_db_unclip_ratio, this->det_db_score_mode);
 
-    boxes = post_processor_.FilterTagDetRes(boxes, ratio_h, ratio_w, srcimg);
+    boxes = post_processor.FilterTagDetRes(boxes, ratio_h, ratio_w, srcimg);
 }
 
 } // namespace PaddleOCR

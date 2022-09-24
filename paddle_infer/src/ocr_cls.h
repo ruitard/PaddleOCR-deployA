@@ -29,15 +29,15 @@ public:
 private:
     std::shared_ptr<paddle_infer::Predictor> predictor;
 
-    std::vector<float> mean_ = {0.5f, 0.5f, 0.5f};
-    std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
-    bool is_scale_ = true;
+    std::array<float, 3> mean{0.5f, 0.5f, 0.5f};
+    std::array<float, 3> scale{1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
+    bool is_scale = true;
     bool use_tensorrt = false;
     int cls_batch_num = 1;
     // pre-process
-    ClsResizeImg resize_op_;
-    Normalize normalize_op_;
-    PermuteBatch permute_op_;
+    ClsResizeImg resize_op;
+    Normalize normalize_op;
+    PermuteBatch permute_op;
 
 }; // class Classifier
 

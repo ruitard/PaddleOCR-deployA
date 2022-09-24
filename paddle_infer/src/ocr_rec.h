@@ -24,9 +24,9 @@ public:
     CRNNRecognizer(const fs::path &model_path, const std::string &label_path) :
         predictor{create_predictor(model_path)} {
 
-        this->label_list_ = Utility::ReadDict(label_path);
-        this->label_list_.insert(this->label_list_.begin(), "#"); // blank char for ctc
-        this->label_list_.push_back(" ");
+        this->label_list = Utility::ReadDict(label_path);
+        this->label_list.insert(this->label_list.begin(), "#"); // blank char for ctc
+        this->label_list.push_back(" ");
     }
     void Run(const std::vector<cv::Mat> &img_list, std::vector<std::string> &rec_texts,
              std::vector<float> &rec_text_scores);
@@ -34,20 +34,20 @@ public:
 private:
     std::shared_ptr<paddle_infer::Predictor> predictor;
 
-    std::vector<std::string> label_list_;
+    std::vector<std::string> label_list;
 
-    std::vector<float> mean_ = {0.5f, 0.5f, 0.5f};
-    std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
-    bool is_scale_ = true;
+    std::array<float, 3> mean{0.5f, 0.5f, 0.5f};
+    std::array<float, 3> scale{1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
+    bool is_scale = true;
     bool use_tensorrt = false;
     int rec_batch_num = 6;
     int rec_img_h = 48;
     int rec_img_w = 320;
     std::array<int, 3> rec_image_shape = {3, 48, 320};
     // pre-process
-    CrnnResizeImg resize_op_;
-    Normalize normalize_op_;
-    PermuteBatch permute_op_;
+    CrnnResizeImg resize_op;
+    Normalize normalize_op;
+    PermuteBatch permute_op;
 
 }; // class CrnnRecognizer
 

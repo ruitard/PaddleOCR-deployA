@@ -37,8 +37,8 @@ void PermuteBatch::Run(const std::vector<cv::Mat> imgs, float *data) {
   }
 }
 
-void Normalize::Run(cv::Mat *im, const std::vector<float> &mean,
-                    const std::vector<float> &scale, const bool is_scale) {
+void Normalize::Run(cv::Mat *im, const std::array<float, 3> &mean,
+                    const std::array<float, 3> &scale, const bool is_scale) {
   double e = 1.0;
   if (is_scale) {
     e /= 255.0;

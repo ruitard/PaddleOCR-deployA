@@ -39,17 +39,17 @@ private:
 
     bool use_tensorrt = false;
 
-    std::vector<float> mean_ = {0.485f, 0.456f, 0.406f};
-    std::vector<float> scale_ = {1 / 0.229f, 1 / 0.224f, 1 / 0.225f};
-    bool is_scale_ = true;
+    std::array<float, 3> mean{0.485f, 0.456f, 0.406f};
+    std::array<float, 3> scale{1 / 0.229f, 1 / 0.224f, 1 / 0.225f};
+    bool is_scale = true;
 
     // pre-process
-    ResizeImgType0 resize_op_;
-    Normalize normalize_op_;
-    Permute permute_op_;
+    ResizeImgType0 resize_op;
+    Normalize normalize_op;
+    Permute permute_op;
 
     // post-process
-    DBPostProcessor post_processor_;
+    DBPostProcessor post_processor;
 };
 
 } // namespace PaddleOCR

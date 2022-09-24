@@ -45,15 +45,15 @@ void CRNNRecognizer::Run(const std::vector<cv::Mat> &img_list, std::vector<std::
             cv::Mat srcimg;
             img_list[indices[ino]].copyTo(srcimg);
             cv::Mat resize_img;
-            this->resize_op_.Run(srcimg, resize_img, max_wh_ratio, this->use_tensorrt,
-                                 this->rec_image_shape);
-            this->normalize_op_.Run(&resize_img, this->mean_, this->scale_, this->is_scale_);
+            this->resize_op.Run(srcimg, resize_img, max_wh_ratio, this->use_tensorrt,
+                                this->rec_image_shape);
+            this->normalize_op.Run(&resize_img, this->mean, this->scale, this->is_scale);
             norm_img_batch.push_back(resize_img);
             batch_width = std::max(resize_img.cols, batch_width);
         }
 
         std::vector<float> input(batch_num * 3 * imgH * batch_width, 0.0f);
-        this->permute_op_.Run(norm_img_batch, input.data());
+        this->permute_op.Run(norm_img_batch, input.data());
 
         // Inference.
         auto input_names = this->predictor->GetInputNames();
@@ -92,7 +92,7 @@ void CRNNRecognizer::Run(const std::vector<cv::Mat> &img_list, std::vector<std::
                 if (argmax_idx > 0 && (!(n > 0 && argmax_idx == last_index))) {
                     score += max_value;
                     count += 1;
-                    str_res += label_list_[argmax_idx];
+                    str_res += label_list[argmax_idx];
                 }
                 last_index = argmax_idx;
             }

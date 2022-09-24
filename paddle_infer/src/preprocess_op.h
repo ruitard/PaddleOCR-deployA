@@ -25,8 +25,8 @@ namespace PaddleOCR {
 
 class Normalize {
 public:
-  virtual void Run(cv::Mat *im, const std::vector<float> &mean,
-                   const std::vector<float> &scale, const bool is_scale = true);
+    virtual void Run(cv::Mat *im, const std::array<float, 3> &mean,
+                     const std::array<float, 3> &scale, const bool is_scale = true);
 };
 
 // RGB -> CHW
