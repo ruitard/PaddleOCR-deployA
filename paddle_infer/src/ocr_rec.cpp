@@ -67,7 +67,8 @@ void CRNNRecognizer::Run(const std::vector<cv::Mat> &img_list, std::vector<std::
         auto output_t = this->predictor->GetOutputHandle(output_names[0]);
         auto predict_shape = output_t->shape();
 
-        int out_num = std::accumulate(predict_shape.begin(), predict_shape.end(), 1, std::multiplies<int>());
+        int out_num =
+            std::accumulate(predict_shape.begin(), predict_shape.end(), 1, std::multiplies<int>());
         predict_batch.resize(out_num);
         // predict_batch is the result of Last FC with softmax
         output_t->CopyToCpu(predict_batch.data());
@@ -83,11 +84,13 @@ void CRNNRecognizer::Run(const std::vector<cv::Mat> &img_list, std::vector<std::
 
             for (int n = 0; n < predict_shape[1]; n++) {
                 // get idx
-                argmax_idx = int(Utility::argmax(&predict_batch[(m * predict_shape[1] + n) * predict_shape[2]],
-                                                 &predict_batch[(m * predict_shape[1] + n + 1) * predict_shape[2]]));
+                argmax_idx = int(Utility::argmax(
+                    &predict_batch[(m * predict_shape[1] + n) * predict_shape[2]],
+                    &predict_batch[(m * predict_shape[1] + n + 1) * predict_shape[2]]));
                 // get score
-                max_value = float(*std::max_element(&predict_batch[(m * predict_shape[1] + n) * predict_shape[2]],
-                                                    &predict_batch[(m * predict_shape[1] + n + 1) * predict_shape[2]]));
+                max_value = float(*std::max_element(
+                    &predict_batch[(m * predict_shape[1] + n) * predict_shape[2]],
+                    &predict_batch[(m * predict_shape[1] + n + 1) * predict_shape[2]]));
 
                 if (argmax_idx > 0 && (!(n > 0 && argmax_idx == last_index))) {
                     score += max_value;

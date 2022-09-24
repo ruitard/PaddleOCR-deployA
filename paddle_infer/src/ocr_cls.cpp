@@ -35,7 +35,8 @@ void Classifier::Run(const std::vector<cv::Mat> &img_list, std::vector<int> &cls
             this->normalize_op.Run(&resize_img, this->mean, this->scale, this->is_scale);
             norm_img_batch.push_back(resize_img);
         }
-        std::vector<float> input(batch_num * cls_image_shape[0] * cls_image_shape[1] * cls_image_shape[2], 0.0f);
+        std::vector<float> input(
+            batch_num * cls_image_shape[0] * cls_image_shape[1] * cls_image_shape[2], 0.0f);
         this->permute_op.Run(norm_img_batch, input.data());
 
         // inference.
@@ -50,7 +51,8 @@ void Classifier::Run(const std::vector<cv::Mat> &img_list, std::vector<int> &cls
         auto output_t = this->predictor->GetOutputHandle(output_names[0]);
         auto predict_shape = output_t->shape();
 
-        int out_num = std::accumulate(predict_shape.begin(), predict_shape.end(), 1, std::multiplies<int>());
+        int out_num =
+            std::accumulate(predict_shape.begin(), predict_shape.end(), 1, std::multiplies<int>());
         predict_batch.resize(out_num);
 
         output_t->CopyToCpu(predict_batch.data());
@@ -59,8 +61,9 @@ void Classifier::Run(const std::vector<cv::Mat> &img_list, std::vector<int> &cls
         for (int batch_idx = 0; batch_idx < predict_shape[0]; batch_idx++) {
             int label = int(Utility::argmax(&predict_batch[batch_idx * predict_shape[1]],
                                             &predict_batch[(batch_idx + 1) * predict_shape[1]]));
-            float score = float(*std::max_element(&predict_batch[batch_idx * predict_shape[1]],
-                                                  &predict_batch[(batch_idx + 1) * predict_shape[1]]));
+            float score =
+                float(*std::max_element(&predict_batch[batch_idx * predict_shape[1]],
+                                        &predict_batch[(batch_idx + 1) * predict_shape[1]]));
             cls_labels[beg_img_no + batch_idx] = label;
             cls_scores[beg_img_no + batch_idx] = score;
         }

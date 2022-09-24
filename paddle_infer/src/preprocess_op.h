@@ -30,12 +30,12 @@ public:
 // RGB -> CHW
 class Permute {
 public:
-  virtual void Run(const cv::Mat *im, float *data);
+    virtual void Run(const cv::Mat *im, float *data);
 };
 
 class PermuteBatch {
 public:
-  virtual void Run(const std::vector<cv::Mat> imgs, float *data);
+    virtual void Run(const std::vector<cv::Mat> imgs, float *data);
 };
 
 class ResizeImgType0 {
@@ -53,27 +53,23 @@ public:
 
 class ClsResizeImg {
 public:
-  virtual void Run(const cv::Mat &img, cv::Mat &resize_img,
-                   bool use_tensorrt = false,
-                   const std::vector<int> &rec_image_shape = {3, 48, 192});
+    virtual void Run(const cv::Mat &img, cv::Mat &resize_img, bool use_tensorrt = false,
+                     const std::vector<int> &rec_image_shape = {3, 48, 192});
 };
 
 class TableResizeImg {
 public:
-  virtual void Run(const cv::Mat &img, cv::Mat &resize_img,
-                   const int max_len = 488);
+    virtual void Run(const cv::Mat &img, cv::Mat &resize_img, const int max_len = 488);
 };
 
 class TablePadImg {
 public:
-  virtual void Run(const cv::Mat &img, cv::Mat &resize_img,
-                   const int max_len = 488);
+    virtual void Run(const cv::Mat &img, cv::Mat &resize_img, const int max_len = 488);
 };
 
 class Resize {
 public:
-  virtual void Run(const cv::Mat &img, cv::Mat &resize_img, const int h,
-                   const int w);
+    virtual void Run(const cv::Mat &img, cv::Mat &resize_img, const int h, const int w);
 };
 
 } // namespace PaddleOCR
