@@ -1,6 +1,6 @@
 find_package(OpenCV CONFIG REQUIRED)
 
-add_library(paddleocr)
+add_library(paddleocr SHARED)
 target_include_directories(paddleocr PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(src)
 
@@ -14,3 +14,5 @@ PRIVATE
     paddle::inference
     opencv_imgcodecs
 )
+
+install(TARGETS paddleocr)

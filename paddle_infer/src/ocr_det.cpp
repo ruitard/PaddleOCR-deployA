@@ -34,7 +34,7 @@ void DBDetector::Run(const cv::Mat &img, std::vector<Box> &boxes) {
 
     // Inference.
     auto input_names = this->predictor->GetInputNames();
-    auto input_t = this->predictor->GetInputHandle(input_names[0]);
+    auto input_t = this->predictor->GetInputHandle(input_names.front());
     input_t->Reshape({1, 3, resize_img.rows, resize_img.cols});
     input_t->CopyFromCpu(input.data());
 
@@ -52,7 +52,7 @@ void DBDetector::Run(const cv::Mat &img, std::vector<Box> &boxes) {
 
     int n2 = output_shape[2];
     int n3 = output_shape[3];
-    int n = n2 * n3;
+    const int n = n2 * n3;
 
     std::vector<float> pred(n, 0.0);
     std::vector<unsigned char> cbuf(n, ' ');

@@ -43,7 +43,7 @@ private:
     int rec_batch_num = 6;
     int rec_img_h = 48;
     int rec_img_w = 320;
-    std::array<int, 3> rec_image_shape = {3, 48, 320};
+    std::array<int, 3> rec_image_shape{3, 48, 320};
     // pre-process
     CrnnResizeImg resize_op;
     Normalize normalize_op;

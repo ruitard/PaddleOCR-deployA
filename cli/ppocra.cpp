@@ -1,5 +1,7 @@
 #include <iostream>
 #include <filesystem>
+
+#include "iniparser.hpp"
 #include "paddle_infer.hpp"
 
 namespace fs = std::filesystem;
