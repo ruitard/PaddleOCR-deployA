@@ -14,7 +14,10 @@
 
 #include <string_view>
 #include <thread>
-#include "paddleocr.h"
+
+#include "ocr_cls.h"
+#include "ocr_det.h"
+#include "ocr_rec.h"
 
 namespace PaddleOCR {
 
@@ -23,12 +26,38 @@ static const fs::path cls_model_dir{"ch_ppocr_mobile_v2.0_cls_slim_infer"};
 static const fs::path rec_model_dir{"ch_PP-OCRv3_rec_slim_infer"};
 static const fs::path rec_char_dict_path{"ppocr_keys_v1.txt"};
 
-PaddleOCR::PaddleOCR() {}
+class PPOCR {
+public:
+    PPOCR();
+    PPOCR(const PPOCR &) = delete;
+    PPOCR(PPOCR &&) = delete;
+    PPOCR &operator=(const PPOCR &) = delete;
+    PPOCR &operator=(PPOCR &&) = delete;
+    std::vector<OCRPredictResult> ocr(const cv::Mat &img, bool enable_cls = false);
+
+private:
+    void det(const cv::Mat &img, std::vector<OCRPredictResult> &ocr_results);
+    void rec(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results);
+    void cls(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results);
+
+    std::unique_ptr<DBDetector> detector;
+    std::unique_ptr<Classifier> classifier;
+    std::unique_ptr<CRNNRecognizer> recognizer;
+};
+
+class PaddleOCR::PaddleOCRImpl {
+public:
+    std::unique_ptr<PPOCR> ppocr;
+};
+
+PaddleOCR::PaddleOCR() {
+    pImpl = std::make_shared<PaddleOCRImpl>();
+    pImpl->ppocr = std::make_unique<PPOCR>();
+}
 
 std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) {
     cv::Mat img = cv::imread(image_path, cv::IMREAD_COLOR);
-    auto ppocr = std::make_unique<PPOCR>();
-    return ppocr->ocr(img);
+    return pImpl->ppocr->ocr(img);
 }
 
 PPOCR::PPOCR() {

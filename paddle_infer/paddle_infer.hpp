@@ -24,6 +24,10 @@ public:
     PaddleOCR &operator=(PaddleOCR &&) = delete;
 
     std::vector<OCRPredictResult> ocr(const fs::path &image_path);
+
+private:
+    class PaddleOCRImpl;
+    std::shared_ptr<PaddleOCRImpl> pImpl;
 };
 
 } // namespace PaddleOCR

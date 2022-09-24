@@ -10,6 +10,16 @@ set(CMAKE_INSTALL_RPATH "$ORIGIN")
 set(CMAKE_INSTALL_LIBDIR lib)
 set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/installed)
 
+if(BUILD_WITH_ASAN)
+    add_compile_options(-fsanitize=address)
+    add_link_options(-fsanitize=address)
+endif()
+
+if(BUILD_WITH_UBSAN)
+    add_compile_options(-fsanitize=undefined)
+    add_link_options(-fsanitize=undefined)
+endif()
+
 include(CTest)
 enable_testing()
 
