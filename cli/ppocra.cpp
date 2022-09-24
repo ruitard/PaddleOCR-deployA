@@ -8,12 +8,12 @@ static void print_result(const std::vector<PaddleOCR::OCRPredictResult> &ocr_res
     for (int i = 0; i < ocr_result.size(); i++) {
         std::cout << i << "\t";
         // det
-        std::vector<std::vector<int>> boxes = ocr_result[i].box;
-        if (boxes.size() > 0) {
+        PaddleOCR::Box box = ocr_result[i].box;
+        if (!box.empty()) {
             std::cout << "det boxes: [";
-            for (int n = 0; n < boxes.size(); n++) {
-                std::cout << '[' << boxes[n][0] << ',' << boxes[n][1] << "]";
-                if (n != boxes.size() - 1) {
+            for (int n = 0; n < box.size(); n++) {
+                std::cout << '[' << box[n][0] << ',' << box[n][1] << "]";
+                if (n != box.size() - 1) {
                     std::cout << ',';
                 }
             }

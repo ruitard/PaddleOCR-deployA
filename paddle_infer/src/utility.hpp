@@ -33,7 +33,7 @@ inline static size_t argmax(ForwardIterator first, ForwardIterator last) {
     return std::distance(first, std::max_element(first, last));
 }
 
-cv::Mat GetRotateCropImage(const cv::Mat &srcimage, const std::vector<std::vector<int>> &box);
+cv::Mat GetRotateCropImage(const cv::Mat &srcimage, const Box &box);
 
 std::vector<int> argsort(const std::vector<float> &array);
 

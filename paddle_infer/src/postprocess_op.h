@@ -29,8 +29,7 @@ public:
 
   float **Mat2Vec(cv::Mat mat);
 
-  std::vector<std::vector<int>>
-  OrderPointsClockwise(std::vector<std::vector<int>> pts);
+  Box OrderPointsClockwise(const Box &pts);
 
   std::vector<std::vector<float>> GetMiniBoxes(cv::RotatedRect box,
                                                float &ssid);
@@ -38,17 +37,14 @@ public:
   float BoxScoreFast(std::vector<std::vector<float>> box_array, cv::Mat pred);
   float PolygonScoreAcc(std::vector<cv::Point> contour, cv::Mat pred);
 
-  std::vector<std::vector<std::vector<int>>>
-  BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap, const float &box_thresh,
-                  const float &det_db_unclip_ratio, const std::string_view &det_db_score_mode);
+  std::vector<Box> BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap,
+                                   const float &box_thresh, const float &det_db_unclip_ratio,
+                                   const std::string_view &det_db_score_mode);
 
-  std::vector<std::vector<std::vector<int>>>
-  FilterTagDetRes(std::vector<std::vector<std::vector<int>>> boxes,
-                  float ratio_h, float ratio_w, cv::Mat srcimg);
+  std::vector<Box> FilterTagDetRes(std::vector<Box> boxes, float ratio_h, float ratio_w,
+                                   cv::Mat srcimg);
 
-private:
-  static bool XsortInt(std::vector<int> a, std::vector<int> b);
-
+  private:
   static bool XsortFp32(std::vector<float> a, std::vector<float> b);
 
   std::vector<std::vector<float>> Mat2Vector(cv::Mat mat);

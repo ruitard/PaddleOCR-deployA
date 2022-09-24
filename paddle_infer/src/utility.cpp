@@ -32,11 +32,10 @@ std::vector<std::string> Utility::ReadDict(const fs::path &path) {
     return label_vec;
 }
 
-cv::Mat Utility::GetRotateCropImage(const cv::Mat &srcimage,
-                                    const std::vector<std::vector<int>> &box) {
+cv::Mat Utility::GetRotateCropImage(const cv::Mat &srcimage, const Box &box) {
     cv::Mat image;
     srcimage.copyTo(image);
-    std::vector<std::vector<int>> points = box;
+    Box points = box;
 
     int x_collect[4] = {box[0][0], box[1][0], box[2][0], box[3][0]};
     int y_collect[4] = {box[0][1], box[1][1], box[2][1], box[3][1]};

@@ -79,13 +79,18 @@ float **DBPostProcessor::Mat2Vec(cv::Mat mat) {
   return array;
 }
 
-std::vector<std::vector<int>>
-DBPostProcessor::OrderPointsClockwise(std::vector<std::vector<int>> pts) {
-  std::vector<std::vector<int>> box = pts;
+bool XsortInt(Point a, Point b) {
+  if (a[0] != b[0])
+    return a[0] < b[0];
+  return false;
+}
+
+Box DBPostProcessor::OrderPointsClockwise(const Box &pts) {
+  Box box = pts;
   std::sort(box.begin(), box.end(), XsortInt);
 
-  std::vector<std::vector<int>> leftmost = {box[0], box[1]};
-  std::vector<std::vector<int>> rightmost = {box[2], box[3]};
+  std::array<Point, 2> leftmost{box[0], box[1]};
+  std::array<Point, 2> rightmost{box[2], box[3]};
 
   if (leftmost[0][1] > leftmost[1][1])
     std::swap(leftmost[0], leftmost[1]);
@@ -93,8 +98,7 @@ DBPostProcessor::OrderPointsClockwise(std::vector<std::vector<int>> pts) {
   if (rightmost[0][1] > rightmost[1][1])
     std::swap(rightmost[0], rightmost[1]);
 
-  std::vector<std::vector<int>> rect = {leftmost[0], rightmost[0], rightmost[1],
-                                        leftmost[1]};
+  Box rect = {leftmost[0], rightmost[0], rightmost[1], leftmost[1]};
   return rect;
 }
 
@@ -113,12 +117,6 @@ std::vector<std::vector<float>> DBPostProcessor::Mat2Vector(cv::Mat mat) {
 }
 
 bool DBPostProcessor::XsortFp32(std::vector<float> a, std::vector<float> b) {
-  if (a[0] != b[0])
-    return a[0] < b[0];
-  return false;
-}
-
-bool DBPostProcessor::XsortInt(std::vector<int> a, std::vector<int> b) {
   if (a[0] != b[0])
     return a[0] < b[0];
   return false;
@@ -243,10 +241,10 @@ float DBPostProcessor::BoxScoreFast(std::vector<std::vector<float>> box_array,
   return score;
 }
 
-std::vector<std::vector<std::vector<int>>>
-DBPostProcessor::BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap, const float &box_thresh,
-                                 const float &det_db_unclip_ratio,
-                                 const std::string_view &det_db_score_mode) {
+std::vector<Box> DBPostProcessor::BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap,
+                                                  const float &box_thresh,
+                                                  const float &det_db_unclip_ratio,
+                                                  const std::string_view &det_db_score_mode) {
   const int min_size = 3;
   const int max_candidates = 1000;
 
@@ -262,7 +260,7 @@ DBPostProcessor::BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap, const
   int num_contours =
       contours.size() >= max_candidates ? max_candidates : contours.size();
 
-  std::vector<std::vector<std::vector<int>>> boxes;
+  std::vector<Box> boxes;
 
   for (int _i = 0; _i < num_contours; _i++) {
     if (contours[_i].size() <= 2) {
@@ -304,16 +302,14 @@ DBPostProcessor::BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap, const
 
     int dest_width = pred.cols;
     int dest_height = pred.rows;
-    std::vector<std::vector<int>> intcliparray;
+    Box intcliparray;
 
-    for (int num_pt = 0; num_pt < 4; num_pt++) {
-      std::vector<int> a{int(clampf(roundf(cliparray[num_pt][0] / float(width) *
-                                           float(dest_width)),
-                                    0, float(dest_width))),
-                         int(clampf(roundf(cliparray[num_pt][1] /
-                                           float(height) * float(dest_height)),
-                                    0, float(dest_height)))};
-      intcliparray.push_back(a);
+    for (auto num_pt = 0; num_pt < intcliparray.size(); num_pt++) {
+      Point a{int(clampf(roundf(cliparray[num_pt][0] / float(width) * float(dest_width)), 0,
+                         float(dest_width))),
+              int(clampf(roundf(cliparray[num_pt][1] / float(height) * float(dest_height)), 0,
+                         float(dest_height)))};
+      intcliparray[num_pt] = a;
     }
     boxes.push_back(intcliparray);
 
@@ -321,13 +317,12 @@ DBPostProcessor::BoxesFromBitmap(const cv::Mat pred, const cv::Mat bitmap, const
   return boxes;
 }
 
-std::vector<std::vector<std::vector<int>>> DBPostProcessor::FilterTagDetRes(
-    std::vector<std::vector<std::vector<int>>> boxes, float ratio_h,
-    float ratio_w, cv::Mat srcimg) {
+std::vector<Box> DBPostProcessor::FilterTagDetRes(std::vector<Box> boxes, float ratio_h,
+                                                  float ratio_w, cv::Mat srcimg) {
   int oriimg_h = srcimg.rows;
   int oriimg_w = srcimg.cols;
 
-  std::vector<std::vector<std::vector<int>>> root_points;
+  std::vector<Box> root_points;
   for (int n = 0; n < boxes.size(); n++) {
     boxes[n] = OrderPointsClockwise(boxes[n]);
     for (int m = 0; m < boxes[0].size(); m++) {

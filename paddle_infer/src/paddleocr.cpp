@@ -94,7 +94,7 @@ std::vector<OCRPredictResult> PPOCR::ocr(const cv::Mat &img, bool enable_cls) {
 }
 
 void PPOCR::det(const cv::Mat &img, std::vector<OCRPredictResult> &ocr_results) {
-    std::vector<std::vector<std::vector<int>>> boxes;
+    std::vector<Box> boxes;
 
     this->detector->Run(img, boxes);
 

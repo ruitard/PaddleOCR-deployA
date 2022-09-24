@@ -37,7 +37,7 @@ void DBDetector::LoadModel(const fs::path &model_dir) {
     this->predictor = paddle_infer::CreatePredictor(config);
 }
 
-void DBDetector::Run(const cv::Mat &img, std::vector<std::vector<std::vector<int>>> &boxes) {
+void DBDetector::Run(const cv::Mat &img, std::vector<Box> &boxes) {
     float ratio_h{};
     float ratio_w{};
 

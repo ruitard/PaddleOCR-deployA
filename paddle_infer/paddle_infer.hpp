@@ -2,13 +2,17 @@
 #include <string>
 #include <memory>
 #include <filesystem>
+#include <array>
 
 namespace PaddleOCR {
 
 namespace fs = std::filesystem;
 
+using Point = std::array<int, 2>;
+using Box = std::array<Point, 4>;
+
 struct OCRPredictResult {
-    std::vector<std::vector<int>> box;
+    Box box;
     std::string text;
     float score = -1.0;
     float cls_score;
