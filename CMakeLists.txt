@@ -1,14 +1,13 @@
 cmake_minimum_required(VERSION 3.24)
 project(ppocra VERSION 1.0.0 HOMEPAGE_URL "https://github.com/ruitard/PaddleOCR-deployA")
 
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_COMPILE_WARNING_AS_ERROR ON)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 set(CMAKE_INSTALL_RPATH "$ORIGIN")
 set(CMAKE_INSTALL_LIBDIR lib)
-set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/installed)
 
 if(BUILD_WITH_ASAN)
     add_compile_options(-fsanitize=address)

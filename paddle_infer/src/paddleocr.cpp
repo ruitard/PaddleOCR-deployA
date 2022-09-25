@@ -21,52 +21,39 @@
 
 namespace PaddleOCR {
 
-static const fs::path det_model_dir{"ch_PP-OCRv3_det_slim_infer"};
-static const fs::path cls_model_dir{"ch_ppocr_mobile_v2.0_cls_slim_infer"};
-static const fs::path rec_model_dir{"ch_PP-OCRv3_rec_slim_infer"};
-static const fs::path rec_char_dict_path{"ppocr_keys_v1.txt"};
-
-class PPOCR {
+class PaddleOCR::PaddleOCRImpl {
 public:
-    PPOCR();
-    PPOCR(const PPOCR &) = delete;
-    PPOCR(PPOCR &&) = delete;
-    PPOCR &operator=(const PPOCR &) = delete;
-    PPOCR &operator=(PPOCR &&) = delete;
-    std::vector<OCRPredictResult> ocr(const cv::Mat &img, bool enable_cls = false);
+    explicit PaddleOCRImpl(const PaddleConfig &config) {
+        detector = std::make_unique<DBDetector>(config.det_model_dir);
+        classifier = std::make_unique<Classifier>(config.cls_model_dir);
+        recognizer =
+            std::make_unique<CRNNRecognizer>(config.rec_model_dir, config.rec_char_dict_path);
+    }
+    std::vector<OCRPredictResult> ocr(const cv::Mat &img, bool enable_cls = false) const;
 
 private:
-    void det(const cv::Mat &img, std::vector<OCRPredictResult> &ocr_results);
-    void rec(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results);
-    void cls(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results);
+    void det(const cv::Mat &img, std::vector<OCRPredictResult> &ocr_results) const;
+    void rec(const std::vector<cv::Mat> &img_list,
+             std::vector<OCRPredictResult> &ocr_results) const;
+    void cls(const std::vector<cv::Mat> &img_list,
+             std::vector<OCRPredictResult> &ocr_results) const;
 
     std::unique_ptr<DBDetector> detector;
     std::unique_ptr<Classifier> classifier;
     std::unique_ptr<CRNNRecognizer> recognizer;
 };
 
-class PaddleOCR::PaddleOCRImpl {
-public:
-    std::unique_ptr<PPOCR> ppocr;
-};
-
-PaddleOCR::PaddleOCR() {
-    pImpl = std::make_shared<PaddleOCRImpl>();
-    pImpl->ppocr = std::make_unique<PPOCR>();
+PaddleOCR::PaddleOCR(const PaddleConfig &config) {
+    pImpl = std::make_shared<PaddleOCRImpl>(config);
 }
 
-std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) {
+std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) const {
     cv::Mat img = cv::imread(image_path, cv::IMREAD_COLOR);
-    return pImpl->ppocr->ocr(img);
+    return pImpl->ocr(img);
 }
 
-PPOCR::PPOCR() {
-    detector = std::make_unique<DBDetector>(det_model_dir);
-    classifier = std::make_unique<Classifier>(cls_model_dir);
-    recognizer = std::make_unique<CRNNRecognizer>(rec_model_dir, rec_char_dict_path);
-};
-
-std::vector<OCRPredictResult> PPOCR::ocr(const cv::Mat &img, bool enable_cls) {
+std::vector<OCRPredictResult> PaddleOCR::PaddleOCRImpl::ocr(const cv::Mat &img,
+                                                            bool enable_cls) const {
     std::vector<OCRPredictResult> ocr_results;
 
     this->det(img, ocr_results);
@@ -92,7 +79,8 @@ std::vector<OCRPredictResult> PPOCR::ocr(const cv::Mat &img, bool enable_cls) {
     return ocr_results;
 }
 
-void PPOCR::det(const cv::Mat &img, std::vector<OCRPredictResult> &ocr_results) {
+void PaddleOCR::PaddleOCRImpl::det(const cv::Mat &img,
+                                   std::vector<OCRPredictResult> &ocr_results) const {
     std::vector<Box> boxes;
 
     this->detector->Run(img, boxes);
@@ -106,7 +94,8 @@ void PPOCR::det(const cv::Mat &img, std::vector<OCRPredictResult> &ocr_results) 
     Utility::sorted_boxes(ocr_results);
 }
 
-void PPOCR::rec(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results) {
+void PaddleOCR::PaddleOCRImpl::rec(const std::vector<cv::Mat> &img_list,
+                                   std::vector<OCRPredictResult> &ocr_results) const {
     std::vector<std::string> rec_texts(img_list.size(), "");
     std::vector<float> rec_text_scores(img_list.size(), 0);
     this->recognizer->Run(img_list, rec_texts, rec_text_scores);
@@ -117,7 +106,8 @@ void PPOCR::rec(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResu
     }
 }
 
-void PPOCR::cls(const std::vector<cv::Mat> &img_list, std::vector<OCRPredictResult> &ocr_results) {
+void PaddleOCR::PaddleOCRImpl::cls(const std::vector<cv::Mat> &img_list,
+                                   std::vector<OCRPredictResult> &ocr_results) const {
     std::vector<int> cls_labels(img_list.size(), 0);
     std::vector<float> cls_scores(img_list.size(), 0);
     this->classifier->Run(img_list, cls_labels, cls_scores);

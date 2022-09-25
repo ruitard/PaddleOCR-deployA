@@ -21,15 +21,22 @@ struct OCRPredictResult {
     int cls_label = -1;
 };
 
+struct PaddleConfig {
+    fs::path det_model_dir;
+    fs::path cls_model_dir;
+    fs::path rec_model_dir;
+    fs::path rec_char_dict_path;
+};
+
 class PaddleOCR {
 public:
-    PaddleOCR();
+    explicit PaddleOCR(const PaddleConfig &);
     PaddleOCR(const PaddleOCR &) = delete;
     PaddleOCR(PaddleOCR &&) = delete;
     PaddleOCR &operator=(const PaddleOCR &) = delete;
     PaddleOCR &operator=(PaddleOCR &&) = delete;
 
-    std::vector<OCRPredictResult> ocr(const fs::path &image_path);
+    std::vector<OCRPredictResult> ocr(const fs::path &image_path) const;
 
 private:
     class PaddleOCRImpl;

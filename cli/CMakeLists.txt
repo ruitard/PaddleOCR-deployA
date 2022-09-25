@@ -4,3 +4,4 @@ set_target_properties(ppocra PROPERTIES
     INSTALL_RPATH "$ORIGIN:$ORIGIN/../lib"
 )
 install(TARGETS ppocra)
+install(FILES config.ini DESTINATION bin)
