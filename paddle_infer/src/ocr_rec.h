@@ -21,7 +21,7 @@ namespace PaddleOCR {
 
 class CRNNRecognizer {
 public:
-    CRNNRecognizer(const fs::path &model_path, const std::string &label_path) :
+    CRNNRecognizer(const fs::path &model_path, const fs::path &label_path) :
         predictor{create_predictor(model_path)} {
 
         this->label_list = Utility::ReadDict(label_path);

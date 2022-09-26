@@ -48,7 +48,7 @@ PaddleOCR::PaddleOCR(const PaddleConfig &config) {
 }
 
 std::vector<OCRPredictResult> PaddleOCR::ocr(const fs::path &image_path) const {
-    cv::Mat img = cv::imread(image_path, cv::IMREAD_COLOR);
+    cv::Mat img = cv::imread(image_path.string(), cv::IMREAD_COLOR);
     return pImpl->ocr(img);
 }
 

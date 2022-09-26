@@ -1,5 +1,8 @@
 # https://www.paddlepaddle.org.cn/inference/v2.3/user_guides/download_lib.html
 
+add_library(paddle_inference SHARED IMPORTED GLOBAL)
+
+if(UNIX)
 add_library(paddle2onnx SHARED IMPORTED GLOBAL)
 set_target_properties(paddle2onnx PROPERTIES
     IMPORTED_LOCATION ${PADDLE_DIRECTORY}/third_party/install/paddle2onnx/lib/libpaddle2onnx.so
@@ -34,11 +37,24 @@ set_target_properties(onnx_runtime PROPERTIES
 )
 install(IMPORTED_RUNTIME_ARTIFACTS onnx_runtime)
 
-add_library(paddle_inference SHARED IMPORTED GLOBAL)
 set_target_properties(paddle_inference PROPERTIES
     IMPORTED_LOCATION ${PADDLE_DIRECTORY}/paddle/lib/libpaddle_inference.so
     INTERFACE_LINK_LIBRARIES "paddle2onnx;mkl_dnn;onnx_runtime;iomp"
 )
+endif()
+
+if(WIN32)
+set_target_properties(paddle_inference PROPERTIES
+    IMPORTED_LOCATION ${PADDLE_DIRECTORY}/paddle/lib/paddle_inference.dll
+    IMPORTED_IMPLIB ${PADDLE_DIRECTORY}/paddle/lib/paddle_inference.lib
+)
+install(FILES ${PADDLE_DIRECTORY}/third_party/install/mkldnn/lib/mkldnn.dll DESTINATION bin)
+install(FILES ${PADDLE_DIRECTORY}/third_party/install/mklml/lib/mklml.dll DESTINATION bin)
+install(FILES ${PADDLE_DIRECTORY}/third_party/install/mklml/lib/libiomp5md.dll DESTINATION bin)
+install(FILES ${PADDLE_DIRECTORY}/third_party/install/paddle2onnx/lib/paddle2onnx.dll DESTINATION bin)
+install(FILES ${PADDLE_DIRECTORY}/third_party/install/onnxruntime/lib/onnxruntime.dll DESTINATION bin)
+endif()
+
 target_include_directories(paddle_inference INTERFACE ${PADDLE_DIRECTORY}/paddle/include)
 install(IMPORTED_RUNTIME_ARTIFACTS paddle_inference)
 add_library(paddle::inference ALIAS paddle_inference)
