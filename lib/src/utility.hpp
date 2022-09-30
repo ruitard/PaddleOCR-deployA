@@ -20,7 +20,7 @@
 
 #include <opencv2/opencv.hpp>
 
-#include "paddleocr.hpp"
+#include "paddle_infer.hpp"
 
 namespace PaddleOCR {
 
