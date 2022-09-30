@@ -1,6 +1,6 @@
 find_package(OpenCV CONFIG REQUIRED)
 
-add_library(paddleocr SHARED)
+add_library(paddleocr)
 target_include_directories(paddleocr PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 add_subdirectory(src)
 
@@ -15,11 +15,10 @@ PRIVATE
     opencv_imgcodecs
 )
 
-install(TARGETS paddleocr)
-
 if(MSVC)
+find_package(OpenBLAS CONFIG REQUIRED)
 install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION bin OPTIONAL)
-install(IMPORTED_RUNTIME_ARTIFACTS opencv_imgcodecs)
+install(IMPORTED_RUNTIME_ARTIFACTS opencv_imgcodecs OpenBLAS::OpenBLAS)
 install(CODE [[
 file(GET_RUNTIME_DEPENDENCIES
     RESOLVED_DEPENDENCIES_VAR RESOLVED_DEPS

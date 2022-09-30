@@ -1,2 +1,4 @@
 /.vscode
 /build
+/paddle_inference
+/paddle_model
