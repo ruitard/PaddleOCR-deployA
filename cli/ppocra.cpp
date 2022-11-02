@@ -3,6 +3,7 @@
 
 #include "iniparser.hpp"
 #include "paddle_infer.hpp"
+#include "helper.hpp"
 
 namespace fs = std::filesystem;
 
@@ -22,8 +23,8 @@ static void print_result(const std::vector<PaddleOCR::OCRPredictResult> &ocr_res
         }
         // rec
         if (ocr_result[i].score != -1.0) {
-            std::cout << "rec text: " << ocr_result[i].text << " rec score: " << ocr_result[i].score
-                      << " ";
+            std::cout << "rec text: " << console_string(ocr_result[i].text)
+                      << " rec score: " << ocr_result[i].score << " ";
         }
         std::cout << std::endl;
     }
@@ -49,14 +50,19 @@ static void scan_target(const PaddleOCR::PaddleOCR &ocr, const fs::path &target_
 }
 
 int main(int argc, const char *argv[]) {
+    const fs::path working_path = fs::path(argv[0]).parent_path(); // NOLINT
     PaddleOCR::PaddleConfig config;
-    if (std::ifstream ifs{"config.ini"}; ifs.is_open()) {
+    if (std::ifstream ifs{working_path / "config.ini"}; ifs.is_open()) {
         inipp::Ini ini;
         if (ini.parse(ifs)) {
-            config.det_model_dir = ini.must_get<std::string>("base", "det_model_dir");
-            config.cls_model_dir = ini.must_get<std::string>("base", "cls_model_dir");
-            config.rec_model_dir = ini.must_get<std::string>("base", "rec_model_dir");
-            config.rec_char_dict_path = ini.must_get<std::string>("base", "rec_char_dict_path");
+            config.det_model_dir =
+                working_path / ini.must_get<std::string>("base", "det_model_dir");
+            config.cls_model_dir =
+                working_path / ini.must_get<std::string>("base", "cls_model_dir");
+            config.rec_model_dir =
+                working_path / ini.must_get<std::string>("base", "rec_model_dir");
+            config.rec_char_dict_path =
+                working_path / ini.must_get<std::string>("base", "rec_char_dict_path");
         }
     }
     const PaddleOCR::PaddleOCR ocr(config);

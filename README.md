@@ -1,7 +1,5 @@
 # PaddleOCR-deployA
-Yet Another PaddleOCR deploy library - A PaddleOCR helper Written in CPP
-
-本项目提供开箱即用、无需安装和配置环境的离线图片 OCR 文字识别程序。
+本项目提供开箱即用的离线图片 OCR 文字识别程序。
 
 本项目基于 [PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR/) 进行开发，提高了 C++ 工程化质量，降低了开发部署难度。
 

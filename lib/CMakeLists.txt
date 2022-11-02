@@ -7,6 +7,7 @@ add_subdirectory(src)
 if(MSVC)
 target_compile_definitions(paddleocr PRIVATE WIN32_LEAN_AND_MEAN NOMINMAX)
 target_compile_options(paddleocr PRIVATE /utf-8 /openmp)
+target_link_options(paddleocr PRIVATE /RELEASE)
 endif()
 
 target_link_libraries(paddleocr
@@ -17,7 +18,11 @@ PRIVATE
 
 if(MSVC)
 find_package(OpenBLAS CONFIG REQUIRED)
-install(FILES $<TARGET_PDB_FILE:${PROJECT_NAME}> DESTINATION bin OPTIONAL)
+
+if(BUILD_SHARED_LIBS)
+install(FILES $<TARGET_PDB_FILE:paddleocr> DESTINATION bin OPTIONAL)
+endif()
+
 install(IMPORTED_RUNTIME_ARTIFACTS opencv_imgcodecs OpenBLAS::OpenBLAS)
 install(CODE [[
 file(GET_RUNTIME_DEPENDENCIES
