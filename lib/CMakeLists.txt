@@ -20,6 +20,7 @@ if(MSVC)
 find_package(OpenBLAS CONFIG REQUIRED)
 
 if(BUILD_SHARED_LIBS)
+# target_link_options(paddleocr PRIVATE LINKER:--version-script=${CMAKE_CURRENT_SOURCE_DIR}/local_symbol.map)
 install(FILES $<TARGET_PDB_FILE:paddleocr> DESTINATION bin OPTIONAL)
 endif()
 
